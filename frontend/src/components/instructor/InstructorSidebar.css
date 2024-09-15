@@ -1,0 +1,8 @@
+.sidebar {
+    background-color: #007bff; 
+  }
+  
+  .sidebar .nav-link.active {
+    background-color: #0056b3; 
+  }
+  

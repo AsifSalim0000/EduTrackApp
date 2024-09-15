@@ -1,0 +1,11 @@
+# Ignore root node_modules
+node_modules/
+
+# Ignore node_modules in backend
+backend/node_modules/
+
+# Ignore node_modules in frontend
+frontend/node_modules/
+
+# Ignore everything inside frontend/src/assets
+frontend/src/assets/

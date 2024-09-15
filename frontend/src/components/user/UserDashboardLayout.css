@@ -1,0 +1,105 @@
+/* Layout CSS for UserDashboardLayout */
+.dashboard-layout {
+  background-color: #f9f9f9;
+  padding: 20px;
+}
+
+.profile-container {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.profile-pic {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.user-info {
+  display: inline-block;
+  margin-left: 20px;
+}
+
+.btn-become-instructor {
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  color: #fff;
+  background-color: #ff6600;
+  border: none;
+}
+
+.nav-tabs {
+  margin-bottom: 20px;
+}
+
+.nav-tabs .nav-item .nav-link {
+  color: #333;
+  border: none;
+}
+
+.nav-tabs .nav-link.active {
+  border-bottom: 5px solid #ff6600; /* Update border-bottom on active tab */
+  font-weight: 600;
+}
+
+.stat-card {
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+}
+
+.course-section h3 {
+  font-weight: 600;
+  color: #333;
+}
+
+.course-card {
+  margin-bottom: 20px;
+  transition: transform 0.3s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+}
+
+.course-card .card-body {
+  text-align: center;
+}
+
+.course-card .card-title {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.course-card .card-text {
+  color: #666;
+}
+
+.course-card .btn {
+  background-color: #ff6600;
+  color: #fff;
+  border: none;
+}
+
+.course-card .btn:hover {
+  background-color: #e65c00;
+}
+
+/* Hover effect for buttons in the nav */
+.nav-tabs .nav-item .nav-link:hover {
+  border-bottom: 5px solid #e65c00; /* Lighter matching color */
+}
+
+.course-section h3 {
+  font-weight: bold;
+  color: #333;
+}
+
+.course-section .course-card img {
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+}

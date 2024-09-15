@@ -1,0 +1,62 @@
+body {
+  background-color: #f8f9fa;
+}
+
+.display-1 {
+  font-size: 10rem;
+  font-weight: 700;
+  color: #343a40;
+}
+
+.display-2 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #6c757d;
+}
+
+.lead {
+  margin-bottom: 2rem;
+  color: #6c757d;
+}
+
+.btnHome {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.25rem;
+}
+.success-modal .modal-header {
+  background-color: #dff0d8;
+  color: green;
+  border-bottom: none;
+  text-align: center;
+}
+
+.success-modal-header .modal-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-modal .modal-body {
+  background-color: #f9f9f9;
+}
+
+.success-modal .modal-footer {
+  border-top: none;
+}
+
+.celebration-animation {
+  background: url('/path/to/celebration-animation.gif') no-repeat center;
+  background-size: contain;
+  height: 100px;
+  margin-top: 20px;
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
