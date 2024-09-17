@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Col, Container, Row, Button, Pagination } from 'react-bootstrap';
+import { Col, Container, Row, Pagination } from 'react-bootstrap';
 import CourseCard from './CourseCard';
 import './CourseCard.css';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import { useGetCoursesQuery, useAddToCartMutation, useAddToWishlistMutation } from '../store/userApiSlice';
 
 const NewCourses = () => {
@@ -22,7 +22,7 @@ const NewCourses = () => {
   const handleAddToCart = async (courseId) => {
     try {
       await addToCart(courseId).unwrap();
-      navigate("/cart")
+      navigate("/cart");
       console.log(`Course ${courseId} added to cart`);
     } catch (error) {
       console.error('Failed to add course to cart', error);
@@ -38,7 +38,10 @@ const NewCourses = () => {
     }
   };
 
-  // Handle pagination
+  const handleWatchLecture = (courseId) => {
+    navigate(`/my-course/${courseId}`);
+  };
+
   const handlePageChange = (pageNumber) => {
     setPage(pageNumber);
   };
@@ -57,9 +60,11 @@ const NewCourses = () => {
               title={course.title}
               price={course.price}
               rating={course.rating}
+              isPurchased={course.isPurchased}
               onAddToCart={() => handleAddToCart(course._id)} 
               onAddToWishlist={() => handleAddToWishlist(course._id)}
-              onClick={() => handleCourseClick(course._id)} // Add onClick prop here
+              onWatchLecture={() => handleWatchLecture(course._id)} // Pass the watch lecture handler
+              onClick={() => handleCourseClick(course._id)} 
             />
           </Col>
         ))}

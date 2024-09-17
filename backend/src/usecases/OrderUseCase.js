@@ -1,7 +1,7 @@
 // createOrderUseCase.js
 
 import { findCartByUserId, deleteCart } from '../repositories/CartRepository.js';
-import { saveOrder } from '../repositories/OrderRepository.js';
+import { saveOrder,getOrderHistoryFromRepo } from '../repositories/OrderRepository.js';
 import { findMyCoursesByUserId, saveMyCourses } from '../repositories/MyCoursesRepository.js';
 import MyCourses from '../domain/MyCourses.js'; 
 
@@ -48,5 +48,9 @@ const createOrderUseCase = async ({ paymentId, amount, userId }) => {
 
   return order;
 };
+const getOrderHistoryUseCase = async (userId) => {
 
-export { createOrderUseCase };
+  return await getOrderHistoryFromRepo(userId);
+};
+
+export { createOrderUseCase,getOrderHistoryUseCase };

@@ -44,15 +44,6 @@ app.use(session({
     }
 }));
 
-app.get('/api/mycourses/:id', async (req, res) => {
-  try {
-    const course = await Course.findById(req.params.id).populate('contents.contentId');
-    res.json(course);
-  } catch (error) {
-    res.status(500).json({ error: 'Error fetching course data' });
-  }
-});
-
 // Routes
 app.use('/api/user', routes);
 app.use('/api/instructor', instructorRoutes);

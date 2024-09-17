@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { useGetMyCoursesQuery } from '../../store/userApiSlice';
 import CourseCard from './CourseCard';
 
 const CoursesList = () => {
-  
   const [page, setPage] = useState(1);
   const [limit] = useState(6); 
   const [searchQuery, setSearchQuery] = useState('');
+
+  const navigate = useNavigate(); // Initialize the navigate hook
 
   const { data: coursesData, isLoading, isError, error } = useGetMyCoursesQuery({
     page,
@@ -38,7 +40,6 @@ const CoursesList = () => {
     <div className="container mt-5">
       <h1 className="text-center mb-4">Courses ({courses.length})</h1>
 
-      {/* Search Input */}
       <div className="mb-4">
         <input
           type="text"
@@ -50,15 +51,17 @@ const CoursesList = () => {
       </div>
 
       <div className="row">
+
         {courses.map((course) => (
           <div key={course.id} className="col-md-4">
+        
             <CourseCard
               title={course.title}
               description={course.description}
               progress={course.progress}
               thumbnail={course.thumbnail}
               onClick={() => {
-                console.log('Course clicked:', course.title);
+                navigate(`/my-course/${course._id}`); 
               }}
             />
           </div>

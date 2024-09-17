@@ -85,8 +85,9 @@ const UserStatus = asyncHandler(async (req, res) => {
 });
 const fetchCourses=async(req,res)=>{
   const { page = 1, search = '' } = req.query;
+  const userId= req.user.id
   try {
-    const courses = await courseUsecase.fetchAllCourses(page, search);
+    const courses = await courseUsecase.fetchAllCourses(userId,page, search);
     res.json(courses);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching courses' });

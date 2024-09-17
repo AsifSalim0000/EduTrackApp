@@ -1,84 +1,89 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, ListGroup, Alert } from 'react-bootstrap';
 import ReactPlayer from 'react-player';
-import axios from 'axios'; // For making API calls to your backend
+import { useGetMyCourseByIdQuery } from '../../store/userApiSlice';
 
 const MyCourseContent = () => {
-  // Use useParams to get courseId from the URL
+  // Extract courseId from the URL
   const { courseId } = useParams();
-  
-  const [courseData, setCourseData] = useState(null);
-  const [selectedContent, setSelectedContent] = useState(null);
 
+  const { data: courseData, isLoading, isError, error } = useGetMyCourseByIdQuery(courseId);
+
+  const [selectedContentIndex, setSelectedContentIndex] = useState(0); // Track the index of selected content
+
+  // Set first content as the default content when data is loaded
   useEffect(() => {
-    // Fetch the course data from the backend
-    axios.get(`/api/mycourses/${courseId}`)
-      .then(response => {
-        setCourseData(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching the course data:', error);
-      });
-  }, [courseId]);
+    if (courseData && courseData.contents.length > 0 && selectedContentIndex === null) {
+      setSelectedContentIndex(0); // Set the first content as default
+    }
+  }, [courseData]);
 
-  if (!courseData) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  // Render video content with quality change
-  const renderVideoContent = (content) => {
+  if (isError) {
     return (
-      <ReactPlayer
-        url={`/src/assets/uploads/videos${content.contentId.url}`} // Access the video URL from contentId
-        controls={true}
-        config={{
-          file: {
-            attributes: {
-              controlsList: 'nodownload' // This prevents download
-            }
+      <Container className="mt-5">
+        <Alert variant="danger" className="text-center">
+          <h4>Course Not Purchased or Available</h4>
+          <p>Please verify if you have purchased this course, or try again later.</p>
+        </Alert>
+      </Container>
+    );
+  }
+
+  // Get the current selected content based on index
+  const selectedContent = courseData.contents[selectedContentIndex];
+
+  // Render video content with ReactPlayer
+  const renderVideoContent = (content) => (
+    <ReactPlayer
+      url={`/src/assets/uploads/videos${content.contentId.url}`} // Video URL from contentId
+      controls={true}
+      config={{
+        file: {
+          attributes: {
+            controlsList: 'nodownload' // Disable downloading
           }
-        }}
-      />
-    );
-  };
+        }
+      }}
+    />
+  );
 
-  // Render quiz content
-  const renderQuizContent = (content) => {
-    return (
-      <Card>
-        <Card.Body>
-          <h5>Quiz</h5>
-          {content.contentId.questions.map((q, index) => (
-            <div key={index}>
-              <p>{q.question}</p>
-              {q.options.map((option, idx) => (
-                <div key={idx}>
-                  <input type="radio" id={`q-${index}-opt-${idx}`} name={`q-${index}`} />
-                  <label htmlFor={`q-${index}-opt-${idx}`}>{option}</label>
-                </div>
-              ))}
-            </div>
-          ))}
-        </Card.Body>
-      </Card>
-    );
-  };
+  // Render quiz content as multiple choice questions
+  const renderQuizContent = (content) => (
+    <Card className="mt-3">
+      <Card.Body>
+        <h5>Quiz</h5>
+        {content.contentId.questions.map((q, index) => (
+          <div key={index}>
+            <p>{q.question}</p>
+            {q.options.map((option, idx) => (
+              <div key={idx}>
+                <input type="radio" id={`q-${index}-opt-${idx}`} name={`q-${index}`} />
+                <label htmlFor={`q-${index}-opt-${idx}`}>{option}</label>
+              </div>
+            ))}
+          </div>
+        ))}
+      </Card.Body>
+    </Card>
+  );
 
-  // Render text content
-  const renderTextContent = (content) => {
-    return (
-      <Card>
-        <Card.Body>
-          <p>{content.contentId.content}</p> {/* Access the text content from contentId */}
-        </Card.Body>
-      </Card>
-    );
-  };
+  // Render text-based content
+  const renderTextContent = (content) => (
+    <Card className="mt-3">
+      <Card.Body>
+        <p>{content.contentId.content}</p> {/* Access text content */}
+      </Card.Body>
+    </Card>
+  );
 
-  // Render the selected content based on its type
+  // Function to render different content types based on type
   const renderContent = (content) => {
-    switch (content.contentId.type) { // Access type from contentId
+    switch (content.contentId.type) {
       case 'video':
         return renderVideoContent(content);
       case 'quiz':
@@ -90,25 +95,55 @@ const MyCourseContent = () => {
     }
   };
 
+  // Navigate to the previous content
+  const handlePrev = () => {
+    if (selectedContentIndex > 0) {
+      setSelectedContentIndex(selectedContentIndex - 1);
+    }
+  };
+
+  // Navigate to the next content
+  const handleNext = () => {
+    if (selectedContentIndex < courseData.contents.length - 1) {
+      setSelectedContentIndex(selectedContentIndex + 1);
+    }
+  };
+
   return (
-    <Container>
+    <Container fluid>
       <Row>
-        <Col md={8}>
+        {/* Left Sidebar - Course Content List */}
+        <Col md={3} className="bg-light p-3">
+          <h4>Course Content</h4>
+          <ListGroup variant="flush">
+            {courseData.contents.map((content, index) => (
+              <ListGroup.Item
+                key={content.contentId._id}
+                action
+                onClick={() => setSelectedContentIndex(index)}
+                active={selectedContentIndex === index}
+              >
+               {index+1} {content.contentId.title}
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        </Col>
+
+   
+        <Col md={9} className="p-4">
           <h2>{courseData.title}</h2>
           <p>{courseData.description}</p>
+
+          <div className="d-flex justify-content-between my-4">
+            <Button variant="outline-primary" onClick={handlePrev} disabled={selectedContentIndex === 0}>
+              Prev
+            </Button>
+            <Button variant="outline-primary" onClick={handleNext} disabled={selectedContentIndex === courseData.contents.length - 1}>
+              Next
+            </Button>
+            <Button variant="success">Mark as Complete</Button>
+          </div>
           {selectedContent ? renderContent(selectedContent) : <p>Select a content to view.</p>}
-        </Col>
-        <Col md={4}>
-          <h4>Course Contents</h4>
-          <ul>
-            {courseData.contents.map((content, index) => (
-              <li key={content.contentId._id}>
-                <Button onClick={() => setSelectedContent(content)}>
-                  {content.contentId.title} {/* Access title from contentId */}
-                </Button>
-              </li>
-            ))}
-          </ul>
         </Col>
       </Row>
     </Container>

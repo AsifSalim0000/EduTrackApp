@@ -54,8 +54,6 @@ const saveCourseDetails = asyncHandler(async (req, res) => {
       thumbnail = req.file.filename; 
     }
     
-    console.log(req.body);
-    
     const instructor = req.user.id;
 
     const courseUpdates = {
@@ -83,7 +81,7 @@ const saveCourseDetails = asyncHandler(async (req, res) => {
         case 'video':
           content = new VideoContent({
             title: chapter.contentId.title,
-            url: chapter.contentId.url,
+            url: chapter.contentId.content || chapter.contentId.url,
             
           });
           break;
@@ -96,7 +94,6 @@ const saveCourseDetails = asyncHandler(async (req, res) => {
           break;
 
         case 'quiz':
-        ;
           content = new QuizContent({
             title: chapter.contentId.title,
             questions: chapter.contentId.questions,
@@ -117,7 +114,7 @@ const saveCourseDetails = asyncHandler(async (req, res) => {
 
     await courseUseCase.updateCourseContents(course._id, savedContentsData);
 
-    res.status(200).json({ message: 'Course details and chapters saved successfully!', course });
+    res.status(200).json({ success:true,message: 'Course details and chapters saved successfully!', course });
   } catch (error) {
     console.error('Failed to save course details and chapters:', error);
     res.status(500).json({ error: error.message });

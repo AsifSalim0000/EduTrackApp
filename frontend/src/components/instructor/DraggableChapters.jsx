@@ -2,17 +2,16 @@ import React, { useState, useRef } from 'react';
 import { Form, Row, Col, Card, Button, Accordion } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
-import { useUploadVideoMutation } from '../../store/instructorApiSlice'; // Update import
-import { FaUpload } from 'react-icons/fa'; // Importing the upload icon
+import { useUploadVideoMutation } from '../../store/instructorApiSlice';
+import { FaUpload } from 'react-icons/fa';
 
 const DraggableChapters = ({ chapters, setChapters }) => {
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
-  const [uploadVideo] = useUploadVideoMutation(); // Use mutation
+  const [uploadVideo] = useUploadVideoMutation(); 
 
-  // Initialize chapters to an empty array if not provided
   const validChapters = Array.isArray(chapters) ? chapters : [];
-  const [fileInputs, setFileInputs] = useState({}); // Track file inputs for each chapter
+  const [fileInputs, setFileInputs] = useState({}); 
 
   const handleChange = (index, field, value) => {
     const updatedChapters = [...validChapters];
@@ -41,7 +40,6 @@ const DraggableChapters = ({ chapters, setChapters }) => {
       console.error('Error uploading video:', error);
     }
 
-    // Clear the file input after upload
     setFileInputs((prev) => ({ ...prev, [index]: null }));
   };
 

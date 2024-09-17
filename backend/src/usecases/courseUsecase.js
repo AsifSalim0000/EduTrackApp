@@ -1,11 +1,11 @@
 import { getCourses, createCourse, updateCourse, findCourseById } from '../repositories/InstructorCourseRepository.js';
 import Course from '../domain/Course.js';
-import {countCourses, findCourses, getAllCourses} from '../repositories/CourseRepository.js';
-import {findMyCoursesByUserId} from '../repositories/MyCoursesRepository.js'
+import {countCourses, findCourses, getAllCourses,findUserCourseById} from '../repositories/CourseRepository.js';
+import {findMyCoursesByUserId, findUserEnrolledCourse} from '../repositories/MyCoursesRepository.js'
 
-const fetchAllCourses = async (page, search) => {
+const fetchAllCourses = async (userId,page, search) => {
   try {
-    return await getAllCourses(page, search);
+    return await getAllCourses(userId,page, search);
   } catch (error) {
     throw new Error('Failed to fetch courses');
   }
@@ -48,8 +48,8 @@ const updateCourseContents = async (courseId, contents) => {
     order: content.order, 
   }));
 
-  // Update the course with new contents
-  const course = await Course.findByIdAndUpdate(
+  
+  const course = await Course.findByIdAndUpdate(   //ineed this to separate into repository !!!!!
     courseId, 
     { contents: updatedContents }, 
     { new: true, runValidators: true }
@@ -85,5 +85,19 @@ const getMyCourses = async ({ userId, page, limit, search }) => {
 
   return { courses, totalCourses };
 };
+const getMyCourseByIdUseCase = async (userId, courseId) => {
+   
+  const userEnrolled = await findUserEnrolledCourse(userId, courseId);
+  
+  if (!userEnrolled) {
+      throw new Error('You have not purchased this course.');
+  }
 
-export default {fetchCourses,addCourse,fetchCourseDetails,updateCourseDetails,updateCourseContents,fetchAllCourses ,getMyCourses}
+  const course = await findUserCourseById(courseId);
+  if (!course) {
+      throw new Error('Course not found.');
+  }
+
+  return course;
+};
+export default {fetchCourses,addCourse,fetchCourseDetails,updateCourseDetails,updateCourseContents,fetchAllCourses ,getMyCourses,getMyCourseByIdUseCase}

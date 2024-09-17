@@ -41,6 +41,7 @@ import UserDashboard from './pages/user/UserDashboard';
 import CoursesList from './pages/user/CoursesList';
 import AccountSettings from './pages/user/AccountSettings';
 import MyCourseContent from './pages/user/MyCourseContent';
+import OrderHistory from './pages/user/OrderHistory';
 
 
 const router = createBrowserRouter(
@@ -72,6 +73,7 @@ const router = createBrowserRouter(
            <Route path="dashboard" element={<UserDashboard />} />
            <Route path="courses" element={<CoursesList />} />
            <Route path="settings" element={<AccountSettings />} />
+           <Route path="purchase-history" element={<OrderHistory />} />
       </Route>
       </Route>
       </Route>

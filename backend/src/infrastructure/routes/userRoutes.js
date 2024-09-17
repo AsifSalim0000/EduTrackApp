@@ -4,8 +4,8 @@ import { forgotOtp, sendOtp, verifyForgotOtpHandler, verifyOtpHandler } from '..
 import { protect } from '../../middlewares/authMiddleware.js';
 import { handleCreateInstructor } from '../../controllers/instructor/InstructorController.js';
 import { addCourseToCart, fetchCart, removeFromCart } from '../../controllers/CartController.js';
-import { createOrder, createRazorpayOrder } from '../../controllers/OrderController.js';
-import { getCoursesByUser } from '../../controllers/MyCoursesController.js';
+import { createOrder, createRazorpayOrder,getOrderHistory } from '../../controllers/OrderController.js';
+import { getCoursesByUser,getMyCourseById } from '../../controllers/MyCoursesController.js';
 import upload from '../../middlewares/upload.js';
 
 const router = express.Router();
@@ -30,5 +30,7 @@ router.post('/create-order',protect,createOrder)
 router.get('/my-courses',protect,getCoursesByUser)
 router.put('/update-user', protect,upload.single('profileImage'), updateUser);
 router.put('/update-password', protect, updatePassword);
+router.get('/mycourse/:courseId',protect,getMyCourseById)
+router.get('/orders/history',protect,getOrderHistory)
 
 export default router;

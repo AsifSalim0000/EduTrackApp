@@ -10,5 +10,23 @@ const getCoursesByUser = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
+const getMyCourseById= async(req,res)=>{
+  const { courseId } = req.params;
+    const userId = req.user._id; 
 
-export {getCoursesByUser}
+    try {
+        
+        const course = await courseUsecase.getMyCourseByIdUseCase(userId, courseId);
+        
+        return res.status(200).json(
+          course
+        );
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+export {getCoursesByUser,getMyCourseById}

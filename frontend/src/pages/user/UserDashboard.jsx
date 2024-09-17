@@ -46,7 +46,7 @@ const UserDashboard = () => {
                 <div className="card-body">
                   <h5 className="card-title">Reiki Level 1</h5>
                   <p className="card-text">Introductions</p>
-                  <Button variant="warning">Watch Lecture</Button>
+                  <Button className='btnprofile' variant="warning">Watch Lecture</Button>
                 </div>
               </div>
             </Col>

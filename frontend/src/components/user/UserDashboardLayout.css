@@ -78,13 +78,13 @@
   color: #666;
 }
 
-.course-card .btn {
+.course-card .btnprofile {
   background-color: #ff6600;
   color: #fff;
   border: none;
 }
 
-.course-card .btn:hover {
+.course-card .btnprofile:hover {
   background-color: #e65c00;
 }
 

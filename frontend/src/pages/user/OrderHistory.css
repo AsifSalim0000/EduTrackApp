@@ -1,0 +1,20 @@
+.order-history-page {
+    padding: 20px;
+  }
+  
+  .order-item {
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .order-item:last-child {
+    border-bottom: none;
+  }
+  
+  .text-warning {
+    color: #f39c12 !important;
+  }
+  
+  .text-danger {
+    color: #e74c3c !important;
+  }
+  

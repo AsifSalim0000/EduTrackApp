@@ -1,5 +1,5 @@
 import Razorpay from '../utils/razorpayConfig.js'
-import { createOrderUseCase } from '../usecases/OrderUseCase.js';
+import { createOrderUseCase,getOrderHistoryUseCase } from '../usecases/OrderUseCase.js';
 
 const createRazorpayOrder = async (req, res) => {
   try {
@@ -37,8 +37,16 @@ const createOrder = async (req, res) => {
     res.status(500).json({ error: 'Failed to create order' });
   }
 };
-
+const getOrderHistory = async (req, res) => {
+  try {
+    const userId = req.user._id; 
+    const orders = await getOrderHistoryUseCase(userId);
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch order history' });
+  }
+};
 
 export {
-  createRazorpayOrder,createOrder
+  createRazorpayOrder,createOrder,getOrderHistory
 };

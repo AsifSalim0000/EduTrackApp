@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container, Form, Row, Col, Card } from 'react-bootstrap';
-import { FaUpload } from 'react-icons/fa'; // For upload icon
+import { FaUpload } from 'react-icons/fa'; 
 import DraggableChapters from '../../components/instructor/DraggableChapters';
 import { useNavigate, useParams } from 'react-router-dom'; 
 import { useFetchCourseDetailsQuery, useSaveCourseDetailsMutation, useUploadVideoMutation } from '../../store/instructorApiSlice'; // Import the useUploadVideoMutation
@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
 const CourseContentPage = () => {
-  const { courseId } = useParams(); // Get courseId from URL parameters
+  const { courseId } = useParams(); 
   const [activeTab, setActiveTab] = useState('advance');
   const navigate = useNavigate();
   const [courseDetails, setCourseDetails] = useState({
@@ -23,7 +23,7 @@ const CourseContentPage = () => {
   });
   
 
-  // Fetch course details using courseId
+
   const { data, error, isLoading, refetch } = useFetchCourseDetailsQuery(courseId); 
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const CourseContentPage = () => {
   }, [refetch]);
 
   const [saveCourseDetails] = useSaveCourseDetailsMutation(); 
-  const [uploadVideo] = useUploadVideoMutation(); // Add video upload mutation
+  const [uploadVideo] = useUploadVideoMutation(); 
 
   useEffect(() => {
     if (data) {
@@ -131,28 +131,35 @@ const CourseContentPage = () => {
       formData.append('title', courseDetails.title);
       formData.append('price', courseDetails.price);
   
-      await saveCourseDetails(formData);
-  
+      const res=await saveCourseDetails(formData).unwrap();
+      if(res.success){
+        Swal.fire({
+          title: 'Success!',
+          text: 'Course details and chapters saved successfully!',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        });
+    
+        navigate('/instructor/courses');
+      }
+     else{
       Swal.fire({
-        title: 'Success!',
-        text: 'Course details and chapters saved successfully!',
-        icon: 'success',
+        title: 'Error!',
+        text: res.error,
+        icon: 'error',
         confirmButtonText: 'OK',
       });
-  
-      navigate('/instructor/courses');
+     }
     } catch (error) {
       console.error('Failed to save course details or chapters:', error);
       Swal.fire({
         title: 'Error!',
-        text: 'Failed to save course details or chapters.',
+        text: error,
         icon: 'error',
         confirmButtonText: 'OK',
       });
     }
   };
-  
-  
 
   return (
     <Container className="mt-5 bg-white shadow p-3">
@@ -211,7 +218,7 @@ const CourseContentPage = () => {
               </Form.Group>
             </Col>
 
-            {/* Course Trailer */}
+            {/* Course - Trailer */}
             <Col md={6}>
               <Form.Group controlId="courseTrailer">
                 <Form.Label>Course Trailer</Form.Label>

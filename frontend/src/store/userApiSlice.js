@@ -133,7 +133,16 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: passwordData,
       }),
     }),
-    
+    getMyCourseById: builder.query({
+      query: (courseId) => `${USERS_URL}/mycourse/${courseId}`,
+    }),
+    getOrderHistory: builder.mutation({
+      query: () => ({
+        url: `${USERS_URL}/orders/history`,
+        method: 'GET',
+      }),
+    }),
+
   }),
 });
 
@@ -158,6 +167,8 @@ export const {
   useCreateOrderMutation,
   useGetMyCoursesQuery,
   useUpdateUserMutation,
-  useUpdatePasswordMutation
+  useUpdatePasswordMutation,
+  useGetMyCourseByIdQuery,
+  useGetOrderHistoryMutation
 } = userApiSlice;
 
