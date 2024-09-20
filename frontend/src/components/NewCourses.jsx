@@ -33,6 +33,7 @@ const NewCourses = () => {
     try {
       await addToWishlist(courseId).unwrap();
       console.log(`Course ${courseId} added to wishlist`);
+      navigate("/profile/wishlist");
     } catch (error) {
       console.error('Failed to add course to wishlist', error);
     }

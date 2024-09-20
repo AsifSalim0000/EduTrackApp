@@ -86,7 +86,6 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: { courseId },
       }),
     }),
-
     addToWishlist: builder.mutation({
       query: (courseId) => ({
         url: `${USERS_URL}/wishlist`,
@@ -142,6 +141,9 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getWishlist: builder.query({
+      query: () => `${USERS_URL}/wishlist`,
+    }),
 
   }),
 });
@@ -169,6 +171,7 @@ export const {
   useUpdateUserMutation,
   useUpdatePasswordMutation,
   useGetMyCourseByIdQuery,
-  useGetOrderHistoryMutation
+  useGetOrderHistoryMutation,
+  useGetWishlistQuery
 } = userApiSlice;
 

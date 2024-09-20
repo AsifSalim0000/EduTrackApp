@@ -1,4 +1,4 @@
-import { addToCart, getCartByUser, removeCourseFromCart  } from '../usecases/cartUseCases.js';
+import { addToCart, addToWishlist, getCartByUser, removeCourseFromCart  } from '../usecases/cartUseCases.js';
 
 const addCourseToCart = async (req, res) => {
   const { courseId } = req.body;
@@ -15,7 +15,21 @@ const addCourseToCart = async (req, res) => {
     return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+const addCourseToWishlist = async (req, res) => {
+  const { courseId } = req.body;
+  const userId = req.user._id;  
 
+  try {
+    const wishlist = await addToWishlist(userId, courseId);
+    if (!wishlist) {
+        return res.status(404).json({ message: 'Wishlist not found or failed to create wishlist' });
+    }
+
+    return res.status(200).json({ message: 'Course added to Wishlist successfully' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
 
 const fetchCart = async (req, res) => {
   try {
@@ -37,6 +51,6 @@ const removeFromCart = async (req, res) => {
 };
 
 
-export { fetchCart, addCourseToCart, removeFromCart };
+export { fetchCart, addCourseToCart, removeFromCart ,addCourseToWishlist};
 
 

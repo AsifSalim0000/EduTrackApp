@@ -19,7 +19,7 @@ const getCoursesController = asyncHandler(async (req, res) => {
 
 const createCourseController = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
-  const { filename: thumbnail } = req.file; // Multer file handling
+  const { filename: thumbnail } = req.file; 
   const instructor = req.user.id;
   
   try {

@@ -5,6 +5,7 @@ import generateToken from '../utils/generateToken.js';
 import { verifyGoogleToken } from '../usecases/VerifyGoogleToken.js';
 import { findByEmail, createUser, resetPassword } from '../repositories/UserRepository.js';
 import courseUsecase from '../usecases/courseUsecase.js';
+import { fetchWishlistForUser } from '../usecases/cartUseCases.js';
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -159,4 +160,15 @@ const updatePassword = async (req, res) => {
       return res.status(500).json({ message: 'Server error' });
   }
 };
-export { logoutUser, loginUser, googleAuthHandler, resetPasswordHandler ,UserStatus,fetchCourses,fetchCourseById,updateUser,updatePassword};
+const getUserWishlist = async (req, res) => {
+  try {
+
+    const wishlist = await fetchWishlistForUser(req.user.id); 
+    console.log(wishlist,"a");
+    
+    res.status(200).json(wishlist);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch wishlist' });
+  }
+};
+export { logoutUser, loginUser, googleAuthHandler, resetPasswordHandler ,UserStatus,fetchCourses,fetchCourseById,updateUser,updatePassword,getUserWishlist};

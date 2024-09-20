@@ -21,7 +21,7 @@ const fetchCourses = async (instructorId, page, search) => {
 
 const addCourse = async (courseData) => {
   try {
-    console.log("as",courseData);
+    console.log(courseData);
     const course=await createCourse(courseData);
    
     

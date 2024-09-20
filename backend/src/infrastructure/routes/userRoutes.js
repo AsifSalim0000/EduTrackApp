@@ -1,9 +1,9 @@
 import express from 'express';
-import { logoutUser,loginUser,googleAuthHandler, resetPasswordHandler, UserStatus, fetchCourses, fetchCourseById, updateUser, updatePassword } from '../../controllers/UserController.js';
+import { logoutUser,loginUser,googleAuthHandler, resetPasswordHandler, UserStatus, fetchCourses, fetchCourseById, updateUser, updatePassword, getUserWishlist } from '../../controllers/UserController.js';
 import { forgotOtp, sendOtp, verifyForgotOtpHandler, verifyOtpHandler } from '../../controllers/OtpController.js';
 import { protect } from '../../middlewares/authMiddleware.js';
 import { handleCreateInstructor } from '../../controllers/instructor/InstructorController.js';
-import { addCourseToCart, fetchCart, removeFromCart } from '../../controllers/CartController.js';
+import { addCourseToCart, addCourseToWishlist, fetchCart, removeFromCart } from '../../controllers/CartController.js';
 import { createOrder, createRazorpayOrder,getOrderHistory } from '../../controllers/OrderController.js';
 import { getCoursesByUser,getMyCourseById } from '../../controllers/MyCoursesController.js';
 import upload from '../../middlewares/upload.js';
@@ -23,6 +23,8 @@ router.get('/status',protect, UserStatus);
 router.get('/courses',protect, fetchCourses);
 router.get('/course-details/:courseId',protect, fetchCourseById);
 router.post('/add-to-cart',protect, addCourseToCart);
+router.post('/wishlist',protect, addCourseToWishlist);
+router.get('/wishlist',protect, getUserWishlist);
 router.get('/cart-details',protect, fetchCart);
 router.post('/remove-from-cart',protect, removeFromCart);
 router.post('/create-razorpay-order',protect,createRazorpayOrder)

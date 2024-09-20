@@ -19,6 +19,8 @@ const getCourses = async (instructorId, page, search) => {
 
 const createCourse = async (courseData) => {
   const newCourse = new Course(courseData);
+  console.log("new Corse",newCourse);
+  
   await newCourse.save();
   
   return newCourse;
