@@ -7,6 +7,7 @@ import { addCourseToCart, addCourseToWishlist, fetchCart, removeFromCart } from 
 import { createOrder, createRazorpayOrder,getOrderHistory } from '../../controllers/OrderController.js';
 import { getCoursesByUser,getMyCourseById } from '../../controllers/MyCoursesController.js';
 import upload from '../../middlewares/upload.js';
+import { fetchMyTeachers, getMessages, sendMessage } from '../../controllers/MessageController.js';
 
 const router = express.Router();
 
@@ -34,5 +35,7 @@ router.put('/update-user', protect,upload.single('profileImage'), updateUser);
 router.put('/update-password', protect, updatePassword);
 router.get('/mycourse/:courseId',protect,getMyCourseById)
 router.get('/orders/history',protect,getOrderHistory)
-
+router.get('/messages/teachers',protect,fetchMyTeachers)
+router.post('/chat/message',protect,sendMessage)
+router.get('/chat/:chatId/live-updates',protect,getMessages)
 export default router;

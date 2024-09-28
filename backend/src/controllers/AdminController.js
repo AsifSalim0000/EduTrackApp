@@ -4,11 +4,14 @@ import {
     toggleBlockTeacher,
     toggleBlockStudent,
   } from '../usecases/adminUseCases.js';
-  
+
+// import { rejectInstructorRequest,acceptInstructorRequest } from '../repositories/AdminRepository.js';
+
 const getTeachers = async (req, res) => {
     try {
       const { page = 1, limit = 10 } = req.query;
       const teachers = await fetchTeachers({ page, limit });
+      
       res.json({ teachers });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -44,4 +47,23 @@ const handleToggleBlockStudent = async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   };
-  export {handleToggleBlockStudent,handleToggleBlockTeacher,getStudents,getTeachers}
+  const acceptInstructor = async (req, res) => {
+    try {
+      const { teacherId } = req.params;
+      const updatedUser = await acceptInstructorRequest(teacherId);
+      res.json({ message: 'Instructor request accepted', updatedUser });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  
+  const rejectInstructor = async (req, res) => {
+    try {
+      const { teacherId } = req.params;
+      const updatedUser = await rejectInstructorRequest(teacherId);
+      res.json({ message: 'Instructor request rejected', updatedUser });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  export {handleToggleBlockStudent,handleToggleBlockTeacher,getStudents,getTeachers,acceptInstructor,rejectInstructor}

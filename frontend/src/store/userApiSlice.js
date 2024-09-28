@@ -145,6 +145,22 @@ export const userApiSlice = apiSlice.injectEndpoints({
       query: () => `${USERS_URL}/wishlist`,
     }),
 
+    // user chat
+    fetchTeachers: builder.query({
+      query: () => `${USERS_URL}/messages/teachers`,
+    }),
+    // Mutation to send message
+    sendMessage: builder.mutation({
+      query: (messageData) => ({
+        url: `${USERS_URL}/chat/message`,
+        method: 'POST',
+        body: messageData,
+      }),
+    }),
+    // Subscription to get live updates
+    getLiveUpdates: builder.query({
+      query: ({chatId,instructorId}) => `${USERS_URL}/chat/${chatId}/live-updates?instructorId=${instructorId}`,
+    }),
   }),
 });
 
@@ -172,6 +188,9 @@ export const {
   useUpdatePasswordMutation,
   useGetMyCourseByIdQuery,
   useGetOrderHistoryMutation,
-  useGetWishlistQuery
+  useGetWishlistQuery,
+  useFetchTeachersQuery,
+  useGetLiveUpdatesQuery,
+  useSendMessageMutation
 } = userApiSlice;
 

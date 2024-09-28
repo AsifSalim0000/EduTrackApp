@@ -164,7 +164,6 @@ const getUserWishlist = async (req, res) => {
   try {
 
     const wishlist = await fetchWishlistForUser(req.user.id); 
-    console.log(wishlist,"a");
     
     res.status(200).json(wishlist);
   } catch (error) {

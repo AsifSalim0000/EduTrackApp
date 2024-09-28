@@ -43,6 +43,8 @@ import AccountSettings from './pages/user/AccountSettings';
 import MyCourseContent from './pages/user/MyCourseContent';
 import OrderHistory from './pages/user/OrderHistory';
 import Wishlist from './pages/user/Wishlist';
+import ChatApp from './pages/user/ChatApp';
+import InstructorChatApp from './pages/instructor/InstructorChatApp';
 
 
 const router = createBrowserRouter(
@@ -76,6 +78,7 @@ const router = createBrowserRouter(
            <Route path="settings" element={<AccountSettings />} />
            <Route path="purchase-history" element={<OrderHistory />} />
            <Route path="wishlist" element={<Wishlist />} />
+           <Route path="messages" element={<ChatApp />} />
       </Route>
       </Route>
       </Route>
@@ -87,7 +90,7 @@ const router = createBrowserRouter(
             <Route path="courses" element={<CoursesPage />} />
             <Route path="courses/create-course" element={<CreateCourseForm />} />
             <Route path="courses/:courseId/add-content" element={<CourseContentPage />} />
-          
+            <Route path="messages" element={<InstructorChatApp />} />
           </Route>
         </Route>
       </Route>
