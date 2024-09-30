@@ -20,7 +20,7 @@ function ChatApp() {
 
   const { data: liveUpdates, isFetching: fetchingMessages } = useGetLiveUpdatesQuery({
     chatId: selectedTeacher?._id, 
-    instructorId: selectedTeacher?.userId?._id,
+    receiverId: selectedTeacher?.userId?._id,
   }, {
     skip: !selectedTeacher, 
   });
@@ -31,12 +31,12 @@ function ChatApp() {
         sender: userInfo._id, 
         content: newMessage,
         chatId: selectedTeacher._id, 
-        instructorId: selectedTeacher.userId._id,
+        receiverId: selectedTeacher.userId._id,
       };
   
       const { data } = await sendMessage(messageData); 
       socket.emit('sendMessage', data);
-      setMessages((prevMessages) => [...prevMessages, data]); // Update local messages
+      setMessages((prevMessages) => [...prevMessages]);
       setNewMessage('');  
     }
   };

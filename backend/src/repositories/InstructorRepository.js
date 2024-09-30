@@ -40,7 +40,7 @@ const createInstructor = asyncHandler(async (instructorData, token) => {
       }
     } else {
       
-      user.role = "Instructor";
+      user.role = "RequestForInstructor";
       await user.save();
     }
 

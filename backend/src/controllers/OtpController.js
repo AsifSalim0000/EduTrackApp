@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import User from '../domain/User.js';
 import generateToken from '../utils/generateToken.js';
 import { verifyForgotOtp, verifyOtp } from '../usecases/VerifyOtp.js';
+import { HttpStatus } from '../utils/HttpStatus.js';
 
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
@@ -16,7 +17,7 @@ const sendOtp = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
-    return res.status(400).json({ error: 'User Already Exists' });
+    return res.status(HttpStatus.BAD_REQUEST).json({ error: 'User Already Exists' });
   }
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   req.session.otp = otp;
@@ -27,14 +28,14 @@ const sendOtp = asyncHandler(async (req, res) => {
     subject: 'Your OTP Code',
     text: `Your OTP code is ${otp}`,
   });
-  res.status(200).json({ message: 'OTP sent successfully' });
+  res.status(HttpStatus.OK).json({ message: 'OTP sent successfully' });
 });
 
 const forgotOtp = asyncHandler(async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
-    return res.status(400).json({ error: `User Doesn't Exist` });
+    return res.status(HttpStatus.BAD_REQUEST).json({ error: `User Doesn't Exist` });
   }
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   req.session.forgototp = otp;
@@ -45,14 +46,14 @@ const forgotOtp = asyncHandler(async (req, res) => {
     subject: 'Your OTP Code For Resetting Password',
     text: `Your OTP code is ${otp}`,
   });
-  res.status(200).json({ message: 'OTP sent successfully' });
+  res.status(HttpStatus.OK).json({ message: 'OTP sent successfully' });
 });
 
 const verifyOtpHandler = asyncHandler(async (req, res) => {
   const result = await verifyOtp(req);
   if (result.success) {
     generateToken(res, result.user.id);
-    res.status(201).json({
+    res.status(HttpStatus.CREATED).json({
       _id: result.user.id,
       username: result.user.username,
       email: result.user.email,
@@ -61,18 +62,18 @@ const verifyOtpHandler = asyncHandler(async (req, res) => {
       profileImage: result.profileImage
     });
   } else {
-    res.status(400).json({ error: result.error });
+    res.status(HttpStatus.BAD_REQUEST).json({ error: result.error });
   }
 });
 
 const verifyForgotOtpHandler = asyncHandler(async (req, res) => {
   const result = await verifyForgotOtp(req);
   if (result.success) {
-    res.status(201).json({
+    res.status(HttpStatus.CREATED).json({
       message: "Password Reset Successfully",
     });
   } else {
-    res.status(400).json({ error: result.error });
+    res.status(HttpStatus.BAD_REQUEST).json({ error: result.error });
   }
 });
 

@@ -159,7 +159,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
     }),
     // Subscription to get live updates
     getLiveUpdates: builder.query({
-      query: ({chatId,instructorId}) => `${USERS_URL}/chat/${chatId}/live-updates?instructorId=${instructorId}`,
+      query: ({chatId,receiverId}) => `${USERS_URL}/chat/${chatId}/live-updates?receiverId=${receiverId}`,
     }),
   }),
 });

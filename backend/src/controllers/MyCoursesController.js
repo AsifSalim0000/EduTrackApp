@@ -1,4 +1,5 @@
 import courseUsecase from '../usecases/courseUsecase.js'
+import { HttpStatus } from '../utils/HttpStatus.js';
 
 const getCoursesByUser = async (req, res) => {
     try {
@@ -7,7 +8,7 @@ const getCoursesByUser = async (req, res) => {
       const result = await courseUsecase.getMyCourses({ userId, page, limit, search });
       res.json(result);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
   };
 const getMyCourseById= async(req,res)=>{
@@ -18,11 +19,11 @@ const getMyCourseById= async(req,res)=>{
         
         const course = await courseUsecase.getMyCourseByIdUseCase(userId, courseId);
         
-        return res.status(200).json(
+        return res.status(HttpStatus.OK).json(
           course
         );
     } catch (error) {
-        return res.status(400).json({
+        return res.status(HttpStatus.BAD_REQUEST).json({
             success: false,
             message: error.message
         });

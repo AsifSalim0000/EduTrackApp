@@ -50,11 +50,11 @@ const UserDashboardLayout = () => {
                 Courses
               </Nav.Link>
             </Nav.Item>
-            <Nav.Item>
+            {/* <Nav.Item>
               <Nav.Link as={NavLink} to="/profile/teachers">
                 Teachers
               </Nav.Link>
-            </Nav.Item>
+            </Nav.Item> */}
             <Nav.Item>
               <Nav.Link as={NavLink} to="/profile/messages">
                 Messages

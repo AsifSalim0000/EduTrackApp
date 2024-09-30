@@ -1,69 +1,80 @@
 import {
-    fetchTeachers,
-    fetchStudents,
-    toggleBlockTeacher,
-    toggleBlockStudent,
-  } from '../usecases/adminUseCases.js';
+  fetchTeachers,
+  fetchStudents,
+  toggleBlockTeacher,
+  toggleBlockStudent,
+  // acceptInstructorRequest,
+  // rejectInstructorRequest,
+} from '../usecases/adminUseCases.js';
 
-// import { rejectInstructorRequest,acceptInstructorRequest } from '../repositories/AdminRepository.js';
+import { HttpStatus } from '../utils/HttpStatus.js'; 
 
 const getTeachers = async (req, res) => {
-    try {
-      const { page = 1, limit = 10 } = req.query;
-      const teachers = await fetchTeachers({ page, limit });
-      
-      res.json({ teachers });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };
-  
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const teachers = await fetchTeachers({ page, limit });
+    
+    res.status(HttpStatus.OK).json({ teachers });
+  } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
 const getStudents = async (req, res) => {
-    try {
-      const { page = 1, limit = 10 } = req.query;
-      const students = await fetchStudents({ page, limit });
-      res.json({ students });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };
-  
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const students = await fetchStudents({ page, limit });
+    res.status(HttpStatus.OK).json({ students });
+  } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
 const handleToggleBlockTeacher = async (req, res) => {
-    try {
-      const { teacherId } = req.params;
-      const teacher = await toggleBlockTeacher(teacherId);
-      res.json({ message: 'Teacher block status updated', teacher });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };
-  
+  try {
+    const { teacherId } = req.params;
+    const teacher = await toggleBlockTeacher(teacherId);
+    res.status(HttpStatus.OK).json({ message: 'Teacher block status updated', teacher });
+  } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
 const handleToggleBlockStudent = async (req, res) => {
-    try {
-      const { studentId } = req.params;
-      const student = await toggleBlockStudent(studentId);
-      res.json({ message: 'Student block status updated', student });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };
-  const acceptInstructor = async (req, res) => {
-    try {
-      const { teacherId } = req.params;
-      const updatedUser = await acceptInstructorRequest(teacherId);
-      res.json({ message: 'Instructor request accepted', updatedUser });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };
-  
-  const rejectInstructor = async (req, res) => {
-    try {
-      const { teacherId } = req.params;
-      const updatedUser = await rejectInstructorRequest(teacherId);
-      res.json({ message: 'Instructor request rejected', updatedUser });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };
-  export {handleToggleBlockStudent,handleToggleBlockTeacher,getStudents,getTeachers,acceptInstructor,rejectInstructor}
+  try {
+    const { studentId } = req.params;
+    const student = await toggleBlockStudent(studentId);
+    res.status(HttpStatus.OK).json({ message: 'Student block status updated', student });
+  } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+const acceptInstructor = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    const updatedUser = await acceptInstructorRequest(teacherId);
+    res.status(HttpStatus.OK).json({ message: 'Instructor request accepted', updatedUser });
+  } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+const rejectInstructor = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    const updatedUser = await rejectInstructorRequest(teacherId);
+    res.status(HttpStatus.OK).json({ message: 'Instructor request rejected', updatedUser });
+  } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+export {
+  handleToggleBlockStudent,
+  handleToggleBlockTeacher,
+  getStudents,
+  getTeachers,
+  acceptInstructor,
+  rejectInstructor,
+};

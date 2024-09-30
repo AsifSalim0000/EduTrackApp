@@ -38,4 +38,6 @@ router.get('/orders/history',protect,getOrderHistory)
 router.get('/messages/teachers',protect,fetchMyTeachers)
 router.post('/chat/message',protect,sendMessage)
 router.get('/chat/:chatId/live-updates',protect,getMessages)
+
+
 export default router;

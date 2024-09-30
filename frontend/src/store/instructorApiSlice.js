@@ -56,6 +56,9 @@ export const instructorApiSlice = apiSlice.injectEndpoints({
         body: formData,
       }),
     }),
+    fetchStudents: builder.query({
+      query: () => `${INSTRUCTOR_URL}/messages/students`,
+    }),
   }),
 });
 
@@ -67,4 +70,5 @@ export const {
   useSaveCourseDetailsMutation,
   useSaveChaptersMutation,
   useUploadVideoMutation, 
+  useFetchStudentsQuery
 } = instructorApiSlice;
