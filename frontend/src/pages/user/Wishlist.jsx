@@ -1,10 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AiFillHeart } from 'react-icons/ai';  
 import './Wishlist.css';
-import { useGetWishlistQuery } from '../../store/userApiSlice';  // Import the hook
+import { useGetWishlistQuery, useRemoveFromWishlistMutation } from '../../store/userApiSlice';  // Import the hook
 
 const Wishlist = () => {
-  const { data: wishlist, isLoading, isError } = useGetWishlistQuery();
+  const { data: wishlist, isLoading, isError,refetch } = useGetWishlistQuery();
+  const [removeFromWishlist] = useRemoveFromWishlistMutation();
+
+  useEffect(() => {
+    refetch();
+  }, [refetch])
+  
+  const handleRemove = async (courseId) => {
+    try {
+      await removeFromWishlist(courseId).unwrap();
+      refetch();
+    } catch (error) {
+      console.error("Failed to remove from wishlist: ", error);
+    }
+  };
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -52,7 +66,10 @@ const Wishlist = () => {
               <td>
                 <button className="btn btn-outline-primary wishlist-buy-now-btn">Buy Now</button>
                 <button className="btn wishlist-add-to-cart-btn">Add To Cart</button>
-                <AiFillHeart className="wishlist-icon" />
+                <AiFillHeart 
+                  className="wishlist-icon" 
+                  onClick={() => handleRemove(courseItem.courseId._id)}  // Call handleRemove on click
+                />
               </td>
             </tr>
           ))}

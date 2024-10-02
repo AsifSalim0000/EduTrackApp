@@ -144,7 +144,14 @@ export const userApiSlice = apiSlice.injectEndpoints({
     getWishlist: builder.query({
       query: () => `${USERS_URL}/wishlist`,
     }),
-
+    removeFromWishlist: builder.mutation({
+      query: (courseId) => ({
+        url: `${USERS_URL}/wishlist/${courseId}`,  
+        method: 'DELETE',
+      }),
+      
+      invalidatesTags: ['Wishlist'],
+    }),
     // user chat
     fetchTeachers: builder.query({
       query: () => `${USERS_URL}/messages/teachers`,
@@ -161,6 +168,25 @@ export const userApiSlice = apiSlice.injectEndpoints({
     getLiveUpdates: builder.query({
       query: ({chatId,receiverId}) => `${USERS_URL}/chat/${chatId}/live-updates?receiverId=${receiverId}`,
     }),
+
+    addReview: builder.mutation({
+      query: (reviewData) => ({
+        url: `${USERS_URL}/reviews`,
+        method: 'POST',
+        body: reviewData,
+      }),
+    }),
+    getCourseReview: builder.query({
+      query: (courseId) => `${USERS_URL}/reviews/${courseId}`,
+    }),
+    getUserReviewForCourse: builder.query({
+      query: ({ courseId }) => ({
+        url: `${USERS_URL}/reviews/user/${courseId}`,
+        method: 'GET',
+      }),
+    }),
+    
+
   }),
 });
 
@@ -189,8 +215,12 @@ export const {
   useGetMyCourseByIdQuery,
   useGetOrderHistoryMutation,
   useGetWishlistQuery,
+  useRemoveFromWishlistMutation,
   useFetchTeachersQuery,
   useGetLiveUpdatesQuery,
-  useSendMessageMutation
+  useSendMessageMutation,
+  useAddReviewMutation,
+  useGetCourseReviewQuery,
+  useGetUserReviewForCourseQuery
 } = userApiSlice;
 

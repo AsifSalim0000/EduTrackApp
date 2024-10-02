@@ -3,6 +3,7 @@ import Wishlist from '../domain/Wishlist.js';
 const findWishlistByUserId = async (userId) => {
   try {
     const wishlist = await Wishlist.findOne({ userId }).populate('courses.courseId');
+
     return wishlist;
   } catch (error) {
     throw new Error('Error finding wishlist');
@@ -44,8 +45,21 @@ const getWishlistByUserId = async (userId) => {
       model: 'User',   
     },
   });
-    console.log(wishlist,"c");
+  
     return wishlist;
 };
+const removeItemFromWishlist = async (userId, courseId) => {
+  try {
+    const wishlist = await Wishlist.findOneAndUpdate(
+      { userId },
+      { $pull: { courses: { courseId } }, lastAccessed: Date.now() },
+      { new: true }
+    ).populate('courses.courseId');  
 
-export {findWishlistByUserId,createWishlist,addItemToWishlist,getWishlistByUserId}
+    return wishlist;
+  } catch (error) {
+    throw new Error('Error removing course from wishlist');
+  }
+};
+
+export {findWishlistByUserId,createWishlist,addItemToWishlist,getWishlistByUserId, removeItemFromWishlist}

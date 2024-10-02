@@ -1,20 +1,91 @@
 .order-history-page {
-    padding: 20px;
-  }
-  
-  .order-item {
-    border-bottom: 1px solid #eaeaea;
-  }
-  
-  .order-item:last-child {
-    border-bottom: none;
-  }
-  
-  .text-warning {
-    color: #f39c12 !important;
-  }
-  
-  .text-danger {
-    color: #e74c3c !important;
-  }
-  
+  padding: 20px;
+}
+
+.order-item {
+  border-bottom: 1px solid #eaeaea;
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.text-warning {
+  color: #f39c12 !important; /* Warning text color */
+}
+
+.text-danger {
+  color: #e74c3c !important; /* Danger text color */
+}
+
+/* Modal Styling */
+.modal-content {
+  border-radius: 8px; /* Rounded corners for the modal */
+}
+
+.modal-header {
+  background-color: #fff3e6; /* Light orange background for the header */
+  border-bottom: 1px solid #f5c6cb; /* Light border */
+}
+
+.modal-title {
+  font-weight: bold; /* Bold title */
+  color: #d9534f; /* Dark orange text color */
+}
+
+.modal-body {
+  padding: 20px; /* Spacing in the body */
+}
+
+.modal-footer {
+  background-color: #fff3e6; /* Light orange background for the footer */
+  border-top: 1px solid #f5c6cb; /* Light border */
+}
+
+.btn-orangish {
+  background-color: #ff9800; /* Orange color */
+  border-color: #ff9800; /* Orange border */
+}
+
+.btn-orangish:hover {
+  background-color: #e68a00; 
+  border-color: #e68a00;
+}
+
+.btn-secondary {
+  background-color: #6c757d; /* Bootstrap secondary color */
+  border-color: #6c757d; /* Bootstrap secondary color */
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268; /* Darker shade on hover */
+  border-color: #545b62; /* Darker border on hover */
+}
+
+/* Adjusting Form Styles */
+.form-control {
+  border: 1px solid #ced4da; /* Light border for inputs */
+  border-radius: 4px; /* Rounded corners for inputs */
+}
+
+.form-control:focus {
+  border-color: #ff9800; /* Orange focus border */
+  box-shadow: 0 0 0 0.2rem rgba(255, 152, 0, 0.25); /* Orange focus shadow */
+}
+
+.star-rating {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.star {
+  font-size: 1.5rem; /* Size of the stars */
+  color: #ff990043; /* Orange color for stars */
+  cursor: pointer; /* Pointer on hover */
+  transition: color 0.2s; /* Smooth color change */
+}
+
+.star.selected {
+  color: #f89d0c; /* Slightly darker orange for selected stars */
+}
+

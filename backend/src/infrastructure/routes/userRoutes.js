@@ -3,11 +3,12 @@ import { logoutUser,loginUser,googleAuthHandler, resetPasswordHandler, UserStatu
 import { forgotOtp, sendOtp, verifyForgotOtpHandler, verifyOtpHandler } from '../../controllers/OtpController.js';
 import { protect } from '../../middlewares/authMiddleware.js';
 import { handleCreateInstructor } from '../../controllers/instructor/InstructorController.js';
-import { addCourseToCart, addCourseToWishlist, fetchCart, removeFromCart } from '../../controllers/CartController.js';
+import { addCourseToCart, addCourseToWishlist, fetchCart, removeCourseFromWishlist, removeFromCart } from '../../controllers/CartController.js';
 import { createOrder, createRazorpayOrder,getOrderHistory } from '../../controllers/OrderController.js';
 import { getCoursesByUser,getMyCourseById } from '../../controllers/MyCoursesController.js';
 import upload from '../../middlewares/upload.js';
 import { fetchMyTeachers, getMessages, sendMessage } from '../../controllers/MessageController.js';
+import { addReview, getUserReviewForCourse } from '../../controllers/ReviewController.js';
 
 const router = express.Router();
 
@@ -38,6 +39,9 @@ router.get('/orders/history',protect,getOrderHistory)
 router.get('/messages/teachers',protect,fetchMyTeachers)
 router.post('/chat/message',protect,sendMessage)
 router.get('/chat/:chatId/live-updates',protect,getMessages)
+router.delete('/wishlist/:courseId',protect,removeCourseFromWishlist)
+router.post('/reviews',protect,addReview);
+router.get('/reviews/user/:courseId', protect,getUserReviewForCourse);
 
 
 export default router;

@@ -118,7 +118,7 @@ function InstructorChatApp() {
             <h5>{selectedStudent.username}</h5>
             <p>Active Now</p>
           </div>
-          <div className="chat-body" ref={chatBodyRef} style={{ overflowY: 'auto', maxHeight: '70vh' }}>
+          <div className="chat-body" ref={chatBodyRef} style={{ overflowY: 'auto', minHeight: '70vh',maxHeight: '70vh' }}>
             {messages.map((msg, index) => (
               <div key={index} className={`message ${msg.sender._id === userInfo._id ? 'sent' : 'received'}`}>
                 {msg.content}

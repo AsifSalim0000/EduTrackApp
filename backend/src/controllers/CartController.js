@@ -1,4 +1,5 @@
-import { addToCart, addToWishlist, getCartByUser, removeCourseFromCart  } from '../usecases/cartUseCases.js';
+
+import { addToCart, addToWishlist, getCartByUser, removeCourseFromCart, removeFromWishlist  } from '../usecases/cartUseCases.js';
 
 import { HttpStatus } from '../utils/HttpStatus.js'; 
 
@@ -51,8 +52,25 @@ const removeFromCart = async (req, res) => {
     res.status(HttpStatus.BAD_REQUEST).json({ message: error.message });
   }
 };
+const removeCourseFromWishlist = async (req, res) => {
+  const { courseId } = req.params;
+  
+  const userId = req.user._id;  
+  console.log(userId,courseId);
+  
+  try {
+    const updatedWishlist = await removeFromWishlist(userId, courseId);
+    if (!updatedWishlist) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Wishlist not found or course not in wishlist' });
+    }
+
+    return res.status(HttpStatus.OK).json({ message: 'Course removed from Wishlist successfully' });
+  } catch (error) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Server error', error: error.message });
+  }
+};
 
 
-export { fetchCart, addCourseToCart, removeFromCart ,addCourseToWishlist};
+export { fetchCart, addCourseToCart, removeFromCart ,addCourseToWishlist,removeCourseFromCart,removeCourseFromWishlist};
 
 

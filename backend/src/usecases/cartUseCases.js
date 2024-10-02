@@ -1,5 +1,5 @@
 import { findCartByUserId, createCart, addItemToCart,removeItemFromCart } from '../repositories/CartRepository.js';
-import { addItemToWishlist, createWishlist, findWishlistByUserId, getWishlistByUserId } from '../repositories/WishlistRepository.js';
+import { addItemToWishlist, createWishlist, findWishlistByUserId, getWishlistByUserId, removeItemFromWishlist } from '../repositories/WishlistRepository.js';
 
 const addToCart = async (userId, courseId) => {
   let cart = await findCartByUserId(userId);
@@ -38,13 +38,32 @@ const getCartByUser = async (userId) => {
 
 const fetchWishlistForUser = async (userId) => {
   const wishlist = await getWishlistByUserId(userId);
-  console.log(wishlist,"b");
   if (!wishlist) {
     throw new Error('Wishlist not found for the user');
   }
   return wishlist;
 };
 
+const removeFromWishlist = async (userId, courseId) => {
+
+  const wishlist = await findWishlistByUserId(userId);
+  console.log(wishlist);
+
+  if (!wishlist || !wishlist.courses || wishlist.courses.length === 0) {
+    return null;
+  }
+
+  const courseExists = wishlist.courses.some(course => course.courseId && course.courseId._id.toString() === courseId);
+
+  if (!courseExists) {
+    return null;
+  }
+
+  const updatedWishlist = await removeItemFromWishlist(userId, courseId);
+
+  return updatedWishlist;
+};
 
 
-  export {addToCart,getCartByUser,removeCourseFromCart,addToWishlist,fetchWishlistForUser}
+
+export {addToCart,getCartByUser,removeCourseFromCart,addToWishlist,fetchWishlistForUser,removeFromWishlist}

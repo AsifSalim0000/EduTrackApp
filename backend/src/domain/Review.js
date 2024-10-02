@@ -1,23 +1,26 @@
-const ReviewSchema = new mongoose.Schema({
-    student: {
+import mongoose from 'mongoose';
+
+const reviewSchema = new mongoose.Schema({
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
-    instructor: {
+    courseId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Instructor',
+        ref: 'Course', 
         required: true,
     },
     rating: {
         type: Number,
         required: true,
         min: 1,
-        max: 5,
+        max: 5, 
     },
     comment: {
         type: String,
         required: true,
+        maxlength: 1000, 
     },
     createdAt: {
         type: Date,
@@ -25,4 +28,4 @@ const ReviewSchema = new mongoose.Schema({
     },
 });
 
-export default mongoose.model('Review', ReviewSchema);
+export default mongoose.model('Review', reviewSchema);
