@@ -39,10 +39,13 @@ const findUserById = async (userId) => {
 };
 
 const findPaginatedUsers = async (query, page, limit) => {
-  return User.find(query)
+  console.log(query);
+  const users = await User.find(query)
     .skip((page - 1) * limit)
     .limit(limit);
+  return users;
 };
+
 
 const toggleBlockStatus = async (userId) => {
   const user = await User.findById(userId);
@@ -52,5 +55,14 @@ const toggleBlockStatus = async (userId) => {
   }
   return user;
 };
+const countStudents = async () => {
+  return await User.countDocuments({ role: 'Student' });
+};
 
-export { findByEmail, createUser, resetPassword,findUserById,findPaginatedUsers,toggleBlockStatus };
+const countInstructors = async () => {
+  return await User.countDocuments({
+      role: { $in: ['Instructor', 'RequestForInstructor'] },
+  });
+};
+
+export { findByEmail, createUser, resetPassword,findUserById,findPaginatedUsers,toggleBlockStatus,countInstructors,countStudents };

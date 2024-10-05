@@ -5,15 +5,14 @@ const ADMIN_URL = '/admin';
 export const adminApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
    
-    fetchTeachers: builder.query({
+    fetchAllTeachers: builder.query({
       query: ({ page, limit }) => `${ADMIN_URL}/teachers?page=${page}&limit=${limit}`,
       providesTags: ['Teacher'],
     }),
 
     
-    fetchStudents: builder.query({
+    fetchAllStudents: builder.query({
       query: ({ page, limit }) => `${ADMIN_URL}/students?page=${page}&limit=${limit}`,
-      providesTags: ['Student'],
     }),
 
     
@@ -46,14 +45,21 @@ export const adminApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Teacher'],
     }),
+    getAdminDashboardInfo: builder.query({
+      query: () => ({
+        url: `${ADMIN_URL}/dashboard-info`, 
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
 export const {
-  useFetchTeachersQuery,
-  useFetchStudentsQuery,
+  useFetchAllTeachersQuery,
+  useFetchAllStudentsQuery,
   useToggleBlockTeacherMutation,
   useToggleBlockStudentMutation,
   useAcceptInstructorRequestMutation,
   useRejectInstructorRequestMutation,
+  useGetAdminDashboardInfoQuery
 } = adminApiSlice;

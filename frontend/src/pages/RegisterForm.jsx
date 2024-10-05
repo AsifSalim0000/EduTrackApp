@@ -10,7 +10,7 @@ import { setCredentials } from '../store/authSlice';
 import { GoogleLogin } from '@react-oauth/google';
 
 const RegisterForm = () => {
-  const [formData, setFormData] = useState({ email: '', username: '', password: '' });
+  const [formData, setFormData] = useState({ email: '', username: '', password: '', confirmPassword: '' });
   const [errors, setErrors] = useState({});
   const [error, setError] = useState(null); 
   const [sendOtp, { isLoading }] = useSendOtpMutation();
@@ -44,6 +44,10 @@ const RegisterForm = () => {
       const passwordError = validatePassword(value.trim());
       setErrors({ ...errors, password: passwordError });
     }
+
+    if (name === 'confirmPassword') {
+      setErrors({ ...errors, confirmPassword: value.trim() !== formData.password ? 'Passwords do not match' : null });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -57,6 +61,7 @@ const RegisterForm = () => {
       email: !email ? 'Email is required' : null,
       username: !username ? 'Username is required' : null,
       password: validatePassword(password),
+      confirmPassword: formData.confirmPassword.trim() !== password ? 'Passwords do not match' : null,
     };
 
     setErrors(newErrors);
@@ -68,7 +73,7 @@ const RegisterForm = () => {
     }
 
     try {
-      await sendOtp(formData).unwrap();
+      await sendOtp({ email, username, password }).unwrap();
       toast.success('OTP sent successfully');
       navigate('/verify-otp');
     } catch (err) {
@@ -141,6 +146,19 @@ const RegisterForm = () => {
               ))}
             </div>
           )}
+        </Form.Group>
+
+        <Form.Group className="my-3" controlId="confirmPassword">
+          <Form.Label>Confirm Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Confirm password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            className="form-control"
+          />
+          {errors.confirmPassword && <div className="text-danger">{errors.confirmPassword}</div>}
         </Form.Group>
 
         <Button type="submit" variant="primary" className="mt-4 w-100" disabled={isLoading}>

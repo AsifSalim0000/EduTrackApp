@@ -3,17 +3,31 @@ import {
   fetchStudents,
   toggleBlockTeacher,
   toggleBlockStudent,
-  // acceptInstructorRequest,
-  // rejectInstructorRequest,
+  getDashboardCount,
+  acceptInstructorRequest,
+  rejectInstructorRequest
 } from '../usecases/adminUseCases.js';
 
 import { HttpStatus } from '../utils/HttpStatus.js'; 
 
+const getDashboardCounts = async (req, res) => {
+  try {
+    console.log("a");
+    
+      const counts = await getDashboardCount();
+      console.log("a",counts);
+      return res.status(200).json(counts);
+  } catch (error) {
+      console.error("Error in fetching dashboard counts:", error);
+      return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 const getTeachers = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
-    const teachers = await fetchTeachers({ page, limit });
     
+    const teachers = await fetchTeachers({ page, limit });
     res.status(HttpStatus.OK).json({ teachers });
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
@@ -21,9 +35,12 @@ const getTeachers = async (req, res) => {
 };
 
 const getStudents = async (req, res) => {
+
   try {
+    
     const { page = 1, limit = 10 } = req.query;
     const students = await fetchStudents({ page, limit });
+    
     res.status(HttpStatus.OK).json({ students });
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
@@ -71,6 +88,7 @@ const rejectInstructor = async (req, res) => {
 };
 
 export {
+  getDashboardCounts,
   handleToggleBlockStudent,
   handleToggleBlockTeacher,
   getStudents,

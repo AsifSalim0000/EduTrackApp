@@ -28,6 +28,14 @@ const findUserById = asyncHandler(async (userId) => {
   }
 });
 
+const updateUserRole = async (user) => {
+  try {
+      return await user.save(); 
+  } catch (error) {
+      throw new Error('Error updating user role');
+  }
+};
+
 const createInstructor = asyncHandler(async (instructorData, token) => {
   try {
     const userId = await useIdFromToken(token);
@@ -59,10 +67,18 @@ const findInstructorByUserId = async (userId) => {
 };
 
 const findPaginatedInstructors = async (query, page, limit) => {
-  return Instructor.find(query)
+
+  const users = await User.find({ role: { $in: ['Instructor', 'RequestForInstructor'] } }, '_id');
+
+  const userIds = users.map(user => user._id);
+
+  const instructors = await Instructor.find({ userId: { $in: userIds } })
     .skip((page - 1) * limit)
     .limit(limit)
     .populate('userId');
+
+  return instructors;
 };
 
-export { createInstructor, useIdFromToken, findUserById,findPaginatedInstructors,findInstructorByUserId };
+
+export { createInstructor, useIdFromToken,updateUserRole, findUserById,findPaginatedInstructors,findInstructorByUserId };

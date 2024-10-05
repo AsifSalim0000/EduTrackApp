@@ -59,6 +59,12 @@ export const instructorApiSlice = apiSlice.injectEndpoints({
     fetchStudents: builder.query({
       query: () => `${INSTRUCTOR_URL}/messages/students`,
     }),
+    getDashboardInfo: builder.query({
+      query: () => ({
+        url: `${INSTRUCTOR_URL}/dashboard-info`, 
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -70,5 +76,6 @@ export const {
   useSaveCourseDetailsMutation,
   useSaveChaptersMutation,
   useUploadVideoMutation, 
-  useFetchStudentsQuery
+  useFetchStudentsQuery,
+  useGetDashboardInfoQuery
 } = instructorApiSlice;

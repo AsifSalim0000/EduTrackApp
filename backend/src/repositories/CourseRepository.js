@@ -46,4 +46,8 @@ const getAllCourses = async (userId, page, search) => {
 const findUserCourseById = async (courseId) => {
     return await Course.findById(courseId).populate("contents.contentId");
 };
-export {getAllCourses,findCourses,countCourses,findUserCourseById}
+const countAllCourses = async () => {
+  return await Course.countDocuments();
+};
+
+export {getAllCourses,findCourses,countCourses,findUserCourseById,countAllCourses}

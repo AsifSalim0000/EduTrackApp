@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Table, Button, Pagination, FormControl } from 'react-bootstrap';
 import Swal from 'sweetalert2';
-import { useFetchStudentsQuery, useToggleBlockStudentMutation } from '../../store/adminApiSlice';
+import { useFetchAllStudentsQuery, useToggleBlockStudentMutation } from '../../store/adminApiSlice';
 
 const AdminStudents = () => {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const limit = 10; // Number of students per page
-  const { data: studentsData, refetch } = useFetchStudentsQuery({ page, limit });
+  const limit = 10; 
+  const { data: studentsData, refetch } = useFetchAllStudentsQuery({ page, limit });
   const [toggleBlockStudent] = useToggleBlockStudentMutation();
 
   const handleToggleBlock = async (studentId, currentStatus) => {

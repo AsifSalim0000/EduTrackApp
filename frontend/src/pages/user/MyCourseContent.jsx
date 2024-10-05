@@ -3,30 +3,27 @@ import { useParams } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, ListGroup, Alert } from 'react-bootstrap';
 import ReactPlayer from 'react-player';
 import { useGetMyCourseByIdQuery } from '../../store/userApiSlice';
+import './MyCourseContent.css'; // Import the custom CSS
 
 const MyCourseContent = () => {
-  // Extract courseId from the URL
   const { courseId } = useParams();
-
   const { data: courseData, isLoading, isError, error } = useGetMyCourseByIdQuery(courseId);
+  const [selectedContentIndex, setSelectedContentIndex] = useState(0);
 
-  const [selectedContentIndex, setSelectedContentIndex] = useState(0); // Track the index of selected content
-
-  // Set first content as the default content when data is loaded
   useEffect(() => {
     if (courseData && courseData.contents.length > 0 && selectedContentIndex === null) {
-      setSelectedContentIndex(0); // Set the first content as default
+      setSelectedContentIndex(0);
     }
   }, [courseData]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="mycourse-loading">Loading...</div>;
   }
 
   if (isError) {
     return (
       <Container className="mt-5">
-        <Alert variant="danger" className="text-center">
+        <Alert variant="danger" className="text-center mycourse-error-alert">
           <h4>Course Not Purchased or Available</h4>
           <p>Please verify if you have purchased this course, or try again later.</p>
         </Alert>
@@ -34,14 +31,13 @@ const MyCourseContent = () => {
     );
   }
 
-  // Get the current selected content based on index
   const selectedContent = courseData.contents[selectedContentIndex];
 
-  // Render video content with ReactPlayer
   const renderVideoContent = (content) => (
     <ReactPlayer
-      url={`/src/assets/uploads/videos${content.contentId.url}`} // Video URL from contentId
+      url={`/src/assets/uploads/videos${content.contentId.url}`}
       controls={true}
+      className="mycourse-video-player"
       config={{
         file: {
           attributes: {
@@ -52,9 +48,8 @@ const MyCourseContent = () => {
     />
   );
 
-  // Render quiz content as multiple choice questions
   const renderQuizContent = (content) => (
-    <Card className="mt-3">
+    <Card className="mycourse-card mt-3">
       <Card.Body>
         <h5>Quiz</h5>
         {content.contentId.questions.map((q, index) => (
@@ -72,16 +67,14 @@ const MyCourseContent = () => {
     </Card>
   );
 
-  // Render text-based content
   const renderTextContent = (content) => (
-    <Card className="mt-3">
+    <Card className="mycourse-card mt-3">
       <Card.Body>
-        <p>{content.contentId.content}</p> {/* Access text content */}
+        <p>{content.contentId.content}</p>
       </Card.Body>
     </Card>
   );
 
-  // Function to render different content types based on type
   const renderContent = (content) => {
     switch (content.contentId.type) {
       case 'video':
@@ -95,14 +88,12 @@ const MyCourseContent = () => {
     }
   };
 
-  // Navigate to the previous content
   const handlePrev = () => {
     if (selectedContentIndex > 0) {
       setSelectedContentIndex(selectedContentIndex - 1);
     }
   };
 
-  // Navigate to the next content
   const handleNext = () => {
     if (selectedContentIndex < courseData.contents.length - 1) {
       setSelectedContentIndex(selectedContentIndex + 1);
@@ -110,38 +101,37 @@ const MyCourseContent = () => {
   };
 
   return (
-    <Container fluid>
+    <Container fluid className="mycourse-container">
       <Row>
-        {/* Left Sidebar - Course Content List */}
-        <Col md={3} className="bg-light p-3">
-          <h4>Course Content</h4>
-          <ListGroup variant="flush">
+        <Col md={3} className="mycourse-sidebar p-3">
+          <h4 className="mycourse-heading">Course Content</h4>
+          <ListGroup variant="flush" className="mycourse-list-group">
             {courseData.contents.map((content, index) => (
               <ListGroup.Item
                 key={content.contentId._id}
                 action
                 onClick={() => setSelectedContentIndex(index)}
                 active={selectedContentIndex === index}
+                className={`mycourse-list-item ${selectedContentIndex === index ? 'active' : ''}`}
               >
-               {index+1} {content.contentId.title}
+                {index + 1}. {content.contentId.title}
               </ListGroup.Item>
             ))}
           </ListGroup>
         </Col>
 
-   
-        <Col md={9} className="p-4">
-          <h2>{courseData.title}</h2>
-          <p>{courseData.description}</p>
+        <Col md={9} className="p-4 mycourse-content">
+          <h2 className="mycourse-title">{courseData.title}</h2>
+          <p className="mycourse-description">{courseData.description}</p>
 
           <div className="d-flex justify-content-between my-4">
-            <Button variant="outline-primary" onClick={handlePrev} disabled={selectedContentIndex === 0}>
+            <Button variant="outline-primary" onClick={handlePrev} disabled={selectedContentIndex === 0} className="mycourse-btn">
               Prev
             </Button>
-            <Button variant="outline-primary" onClick={handleNext} disabled={selectedContentIndex === courseData.contents.length - 1}>
+            <Button variant="outline-primary" onClick={handleNext} disabled={selectedContentIndex === courseData.contents.length - 1} className="mycourse-btn">
               Next
             </Button>
-            <Button variant="success">Mark as Complete</Button>
+            <Button variant="success" className="mycourse-complete-btn">Mark as Complete</Button>
           </div>
           {selectedContent ? renderContent(selectedContent) : <p>Select a content to view.</p>}
         </Col>

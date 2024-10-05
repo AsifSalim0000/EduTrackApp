@@ -12,30 +12,65 @@ import adminRoutes from '../routes/adminRoutes.js';
 import session from 'express-session';
 import { v4 as uuidv4 } from 'uuid';
 import nocache from 'nocache';
-import http from 'http';  // Import the http module
-import { Server } from 'socket.io';  // Import socket.io server
-
+import http from 'http';
+import { Server } from 'socket.io';
 import { notFound, errorHandler } from '../../middlewares/errorMiddleware.js';
 
-// Necessary for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Initialize the app and server
 const app = express();
 dotenv.config();
 connectDB();
 
-// Create the server using http, which will work with socket.io
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",  // Define allowed origins
+    origin: "http://localhost:3000", // Adjust your front-end URL
     methods: ["GET", "POST"],
   },
 });
 
-// Middleware
+let onlineUsers = {};
+
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
+  socket.on('joinChat', ({ userId, chatId }) => {
+    onlineUsers[userId] = { socketId: socket.id, chatId };
+    socket.join(chatId);
+    io.emit('onlineUsers', onlineUsers);
+  });
+
+  socket.on('sendMessage', (messageData) => {
+    io.to(messageData.chatId).emit('receiveMessage', messageData);
+  });
+
+  // Emit typing event with both sender and receiver
+  socket.on('typing', ({ senderId, receiverId }) => {
+    io.to(onlineUsers[receiverId]?.socketId).emit('typing', { senderId, receiverId });
+  });
+
+  // Emit stopTyping event with both sender and receiver
+  socket.on('stopTyping', ({ senderId, receiverId }) => {
+    io.to(onlineUsers[receiverId]?.socketId).emit('stopTyping', { senderId, receiverId });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+    for (const userId in onlineUsers) {
+      if (onlineUsers[userId].socketId === socket.id) {
+        delete onlineUsers[userId];
+        break;
+      }
+    }
+    io.emit('onlineUsers', onlineUsers);
+  });
+});
+
+
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -43,58 +78,39 @@ app.use(nocache());
 app.use(cookieParser());
 app.use(cors());
 
-app.use(session({
-    secret: process.env.SESSION_SECRET || uuidv4(), 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || uuidv4(),
     resave: false,
-    saveUninitialized: false, 
+    saveUninitialized: false,
     cookie: {
-        maxAge: 3600000, // 1 hour
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
-    }
-}));
+      maxAge: 3600000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    },
+  })
+);
 
-// Routes
 app.use('/api/user', routes);
 app.use('/api/instructor', instructorRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Handle production mode for serving the frontend
 if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
-  
-    app.get('*', (req, res) =>
-      res.sendFile(path.resolve(__dirname, 'frontend', 'dist', 'index.html'))
-    );
+  app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
+  app.get('*', (req, res) =>
+    res.sendFile(path.resolve(__dirname, 'frontend', 'dist', 'index.html'))
+  );
 } else {
-    app.get('/', (req, res) => {
-      res.send('API is running....');
-    });
+  app.get('/', (req, res) => {
+    res.send('API is running....');
+  });
 }
 
-// Socket.IO Logic
-io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
-  
-  // Handle receiving messages
-  socket.on('sendMessage', (messageData) => {
-    // Broadcast the message to all connected users
-    io.emit('receiveMessage', messageData);
-  });
-
-  // Handle user disconnection
-  socket.on('disconnect', () => {
-    console.log(`User disconnected: ${socket.id}`);
-  });
-});
-
-// Error Handling Middleware
 app.use(notFound);
 app.use(errorHandler);
 
-// Start the server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

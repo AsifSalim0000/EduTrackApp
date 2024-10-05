@@ -159,4 +159,44 @@
     color: white;
     border: none;
   }
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    font-size: 1rem; /* Adjust font size as needed */
+  }
+  
+  .dot {
+    animation: jump 1s infinite;
+    margin: 0 2px; /* Space between dots */
+    opacity: 0;
+    color: #e65c00;
+  }
+  
+  .dot:nth-child(1) {
+    animation-delay: 0s;
+  }
+  .dot:nth-child(2) {
+    animation-delay: 0.2s; /* Slight delay for each dot */
+  }
+  .dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  
+  @keyframes jump {
+    0% {
+      transform: translateY(0);
+      color: #e65c00;
+      opacity: 0;
+    }
+    30% {
+      transform: translateY(-10px);
+      color: #e65c00;
+      opacity: 1; /* Fully visible */
+    }
+    100% {
+      transform: translateY(0);
+      color: #e65c00;
+      opacity: 0; /* Fade out */
+    }
+  }
   

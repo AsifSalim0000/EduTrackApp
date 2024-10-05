@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Table, Button, Pagination, FormControl } from 'react-bootstrap';
 import Swal from 'sweetalert2';
-import { useFetchTeachersQuery, useToggleBlockTeacherMutation, useAcceptInstructorRequestMutation, useRejectInstructorRequestMutation } from '../../store/adminApiSlice';
+import { useFetchAllTeachersQuery, useToggleBlockTeacherMutation, useAcceptInstructorRequestMutation, useRejectInstructorRequestMutation } from '../../store/adminApiSlice';
 import { useSelector } from 'react-redux';
 
 const AdminTeachers = () => {
@@ -9,7 +9,7 @@ const AdminTeachers = () => {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const limit = 10;
-  const { data: teachersData, refetch } = useFetchTeachersQuery({ page, limit });
+  const { data: teachersData, refetch } = useFetchAllTeachersQuery({ page, limit });
   const [toggleBlockTeacher] = useToggleBlockTeacherMutation();
   const [acceptInstructorRequest] = useAcceptInstructorRequestMutation();
   const [rejectInstructorRequest] = useRejectInstructorRequestMutation();

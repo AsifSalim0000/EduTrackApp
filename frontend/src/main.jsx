@@ -58,9 +58,9 @@ const router = createBrowserRouter(
         <Route path="forgotpassword-otp" element={<ForgotPasswordOtp />} />
         <Route path="reset-password" element={<ResetPassword />} />
       </Route>
-     
+
+      <Route path="/" element={<App />}>     
       <Route element={<AuthGuard />}>
-      <Route path="/" element={<App />}>
         <Route index element={<HomePage />} />
         <Route path="become-a-tutor" element={<BecomeTeacherForm />} />
         <Route path="coursedetails/:courseId" element={<CourseDetail />} />
@@ -70,8 +70,9 @@ const router = createBrowserRouter(
       </Route>
 
       </Route>
-      <Route element={<AuthGuard />}>
+
       <Route path="/" element={<App />}>
+      <Route element={<AuthGuard />}>
       <Route path="/profile" element={<UserDashboardLayout />}>
            <Route path="dashboard" element={<UserDashboard />} />
            <Route path="courses" element={<CoursesList />} />

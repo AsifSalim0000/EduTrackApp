@@ -48,7 +48,7 @@ const BecomeTeacherForm = () => {
         try {
             await createInstructor({ qualifications: qualificationsArray, description: descriptionArray }).unwrap();
         
-            const updatedUserInfo = { ...userInfo, role: 'Instructor' };
+            const updatedUserInfo = { ...userInfo, role: 'RequestForInstructor' };
             dispatch(setCredentials(updatedUserInfo));
             
             setSuccessMessage('Instructor profile created successfully!');

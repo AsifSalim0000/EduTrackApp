@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import nodemailer from 'nodemailer';
 import User from '../domain/User.js';
-import generateToken from '../utils/generateToken.js';
+import generateTokens from '../utils/generateTokens.js';
 import { verifyForgotOtp, verifyOtp } from '../usecases/VerifyOtp.js';
 import { HttpStatus } from '../utils/HttpStatus.js';
 
@@ -52,7 +52,7 @@ const forgotOtp = asyncHandler(async (req, res) => {
 const verifyOtpHandler = asyncHandler(async (req, res) => {
   const result = await verifyOtp(req);
   if (result.success) {
-    generateToken(res, result.user.id);
+    generateTokens(res, result.user.id);
     res.status(HttpStatus.CREATED).json({
       _id: result.user.id,
       username: result.user.username,

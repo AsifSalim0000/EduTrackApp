@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
 import UserManagement from '../usecases/UserManagement.js';
-import generateToken from '../utils/generateToken.js';
+import generateTokens from '../utils/generateTokens.js';
 import { verifyGoogleToken } from '../usecases/VerifyGoogleToken.js';
 import { findByEmail, createUser, resetPassword } from '../repositories/UserRepository.js';
 import courseUsecase from '../usecases/courseUsecase.js';
@@ -12,7 +12,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await UserManagement.loginUser(email, password);
   if (user) {
-    generateToken(res, user._id);
+    generateTokens(res, user._id);
     res.status(HttpStatus.OK).json({
       _id: user._id,
       name: user.name,
@@ -38,7 +38,7 @@ const googleAuthHandler = asyncHandler(async (req, res) => {
       password: '123456',
     });
   }
-  generateToken(res, user._id);
+  generateTokens(res, user._id);
 
   res.status(HttpStatus.OK).json({
     email: user.email,

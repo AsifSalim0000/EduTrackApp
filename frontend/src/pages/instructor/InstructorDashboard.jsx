@@ -1,18 +1,26 @@
 import React from 'react';
-import { Card, Row, Col, Button } from 'react-bootstrap';
+import { Card, Row, Col, Button, Spinner, Alert } from 'react-bootstrap';
+import { Link } from 'react-router-dom'; // Import Link from React Router
+import { useGetDashboardInfoQuery } from '../../store/instructorApiSlice';
 
 const InstructorDashboard = () => {
+  
+  const { data: dashboardInfo, isLoading, error } = useGetDashboardInfoQuery();
+
+  if (isLoading) return <Spinner animation="border" />;
+  if (error) return <Alert variant="danger">Failed to load dashboard info</Alert>;
+
   return (
     <div className="instructor-dashboard">
       <h1 className="mb-4">Instructor Dashboard</h1>
 
-   
+      {/* Summary Cards */}
       <Row className="mb-4">
         <Col md={3}>
           <Card>
             <Card.Body>
               <Card.Title>Total Courses</Card.Title>
-              <Card.Text>12</Card.Text>
+              <Card.Text>{dashboardInfo?.totalCourses || 0}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -20,7 +28,7 @@ const InstructorDashboard = () => {
           <Card>
             <Card.Body>
               <Card.Title>Total Students</Card.Title>
-              <Card.Text>345</Card.Text>
+              <Card.Text>{dashboardInfo?.totalStudents || 0}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -28,7 +36,7 @@ const InstructorDashboard = () => {
           <Card>
             <Card.Body>
               <Card.Title>Total Earnings</Card.Title>
-              <Card.Text>$23,456</Card.Text>
+              <Card.Text>${dashboardInfo?.totalEarnings || 0}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -36,13 +44,13 @@ const InstructorDashboard = () => {
           <Card>
             <Card.Body>
               <Card.Title>New Messages</Card.Title>
-              <Card.Text>5</Card.Text>
+              <Card.Text>{dashboardInfo?.newMessages || 0}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-      {/* Sample Action Buttons */}
+      {/* Action Buttons */}
       <Row className="mb-4">
         <Col md={4}>
           <Card>
@@ -51,7 +59,9 @@ const InstructorDashboard = () => {
               <Card.Text>
                 Start creating a new course for your students.
               </Card.Text>
-              <Button variant="primary">Create Course</Button>
+              <Link to="/instructor/courses/create-course">
+                <Button variant="primary">Create Course</Button>
+              </Link>
             </Card.Body>
           </Card>
         </Col>
@@ -62,7 +72,9 @@ const InstructorDashboard = () => {
               <Card.Text>
                 Manage your existing courses and view details.
               </Card.Text>
-              <Button variant="success">View Courses</Button>
+              <Link to="/instructor/courses">
+                <Button variant="success">View Courses</Button>
+              </Link>
             </Card.Body>
           </Card>
         </Col>
@@ -73,22 +85,23 @@ const InstructorDashboard = () => {
               <Card.Text>
                 Check your earnings and payment history.
               </Card.Text>
-              <Button variant="warning">View Earnings</Button>
+              <Link to="/instructor/earnings">
+                <Button variant="warning">View Earnings</Button>
+              </Link>
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-      {/* Sample Recent Activity Section */}
+      {/* Recent Activity Section */}
       <h2 className="mb-4">Recent Activity</h2>
       <Card>
         <Card.Body>
           <Card.Text>
             <ul>
-              <li>New student enrolled in "React Basics" - 1 hour ago</li>
-              <li>Course "Advanced JavaScript" received a new review - 2 hours ago</li>
-              <li>You earned $200 from the sale of "Full Stack Development" - 3 hours ago</li>
-              <li>New message from student John Doe - 4 hours ago</li>
+              {dashboardInfo?.recentActivities?.map((activity, index) => (
+                <li key={index}>{activity}</li>
+              )) || <li>No recent activity</li>}
             </ul>
           </Card.Text>
         </Card.Body>
