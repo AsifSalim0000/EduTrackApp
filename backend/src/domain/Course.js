@@ -46,6 +46,18 @@ const courseSchema = new mongoose.Schema({
     price:{
         type:Number,
        
+    },
+    isLive:{
+        type: Boolean,
+        default: false,
+    },
+    isBlocked:{
+        type: Boolean,
+        default: false,
+    },
+    isDeleted:{
+        type: Boolean,
+        default: false,
     }
 });
 

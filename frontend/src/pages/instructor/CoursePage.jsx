@@ -10,19 +10,20 @@ const CoursesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
+
   const { data, isLoading, isError, refetch } = useFetchCoursesQuery({
     page: currentPage,
     search,
   });
 
   useEffect(() => {
-    
+
     refetch();
   }, [refetch]);
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
 
   return (
     <Container>
@@ -41,7 +42,7 @@ const CoursesPage = () => {
         </Col>
       </Row>
 
-      <CourseTable courses={data?.data || []} />
+      <CourseTable courses={data?.data || []} refetch={refetch} />
 
       <Pagination
         currentPage={currentPage}

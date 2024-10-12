@@ -1,0 +1,15 @@
+.deleted-stamp {
+    display: inline-block; /* Ensure the stamp has block-like behavior */
+    font-weight: bolder; /* Extra bold text */
+    letter-spacing: 10px; /* Increased spacing between letters */
+    color: red; /* Red text color */
+    font-size: 1.5em; /* Larger font size for prominence */
+    font-family: 'Arial Black', 'Arial Bold', sans-serif; /* Bold font family */
+    border-top: 3px solid red; /* Top border */
+    border-bottom: 3px solid red; /* Bottom border */
+    padding: 10px; /* Increased padding for better spacing */
+    background-color: rgba(255, 0, 0, 0.1); /* Light background for contrast */
+    text-align: center; /* Center the text */
+    text-transform: uppercase; /* Uppercase letters for emphasis */
+
+}

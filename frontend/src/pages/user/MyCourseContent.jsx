@@ -2,13 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, ListGroup, Alert } from 'react-bootstrap';
 import ReactPlayer from 'react-player';
-import { useGetMyCourseByIdQuery } from '../../store/userApiSlice';
-import './MyCourseContent.css'; // Import the custom CSS
+import { useGetMyCourseByIdQuery, useMarkContentAsCompleteMutation } from '../../store/userApiSlice';
+import './MyCourseContent.css';
+import { toast } from 'react-toastify';
 
 const MyCourseContent = () => {
   const { courseId } = useParams();
-  const { data: courseData, isLoading, isError, error } = useGetMyCourseByIdQuery(courseId);
+  const { data: courseData, isLoading, isError } = useGetMyCourseByIdQuery(courseId);
   const [selectedContentIndex, setSelectedContentIndex] = useState(0);
+  const [userAnswers, setUserAnswers] = useState({});
+  const [markAsComplete] = useMarkContentAsCompleteMutation();
+
+const handleMarkComplete = async () => {
+  try {
+    await markAsComplete({ courseId, contentId: selectedContent.contentId._id });
+    toast.success('Marked as complete!');
+  } catch (error) {
+    console.error('Failed to mark as complete:', error);
+    toast.error('Error marking as complete');
+  }
+};
 
   useEffect(() => {
     if (courseData && courseData.contents.length > 0 && selectedContentIndex === null) {
@@ -35,18 +48,25 @@ const MyCourseContent = () => {
 
   const renderVideoContent = (content) => (
     <ReactPlayer
-      url={`/src/assets/uploads/videos${content.contentId.url}`}
+      url={`${content.contentId.url}`}
       controls={true}
       className="mycourse-video-player"
       config={{
         file: {
           attributes: {
-            controlsList: 'nodownload' // Disable downloading
-          }
-        }
+            controlsList: 'nodownload',
+          },
+        },
       }}
     />
   );
+
+  const handleAnswerChange = (questionIndex, selectedOption) => {
+    setUserAnswers((prev) => ({
+      ...prev,
+      [questionIndex]: selectedOption,
+    }));
+  };
 
   const renderQuizContent = (content) => (
     <Card className="mycourse-card mt-3">
@@ -55,12 +75,40 @@ const MyCourseContent = () => {
         {content.contentId.questions.map((q, index) => (
           <div key={index}>
             <p>{q.question}</p>
-            {q.options.map((option, idx) => (
-              <div key={idx}>
-                <input type="radio" id={`q-${index}-opt-${idx}`} name={`q-${index}`} />
-                <label htmlFor={`q-${index}-opt-${idx}`}>{option}</label>
+            {q.options.map((option, idx) => {
+              const isCorrect = userAnswers[index] === parseInt(q.correctAnswer);
+              const isSelected = userAnswers[index] === idx;
+
+              let backgroundColor;
+              if (isSelected && isCorrect) {
+                backgroundColor = 'lightgreen'; 
+              } else if (isSelected && !isCorrect) {
+                backgroundColor = 'lightcoral'; 
+              }
+
+              return (
+                <div key={idx} style={{ backgroundColor }}>
+                  <input
+                    type="radio"
+                    id={`q-${index}-opt-${idx}`}
+                    name={`q-${index}`}
+                    value={idx}
+                    checked={isSelected}
+                    onChange={() => handleAnswerChange(index, idx)}
+                  />
+                  <label htmlFor={`q-${index}-opt-${idx}`}>{option}</label>
+                </div>
+              );
+            })}
+            {userAnswers[index] !== undefined && (
+              <div>
+                {userAnswers[index] === parseInt(q.correctAnswer) ? (
+                  <span className="text-success">Correct!</span>
+                ) : (
+                  <span className="text-danger">Incorrect!</span>
+                )}
               </div>
-            ))}
+            )}
           </div>
         ))}
       </Card.Body>
@@ -131,7 +179,7 @@ const MyCourseContent = () => {
             <Button variant="outline-primary" onClick={handleNext} disabled={selectedContentIndex === courseData.contents.length - 1} className="mycourse-btn">
               Next
             </Button>
-            <Button variant="success" className="mycourse-complete-btn">Mark as Complete</Button>
+            <Button variant="success" onClick={handleMarkComplete} className="mycourse-complete-btn">Mark as Complete</Button>
           </div>
           {selectedContent ? renderContent(selectedContent) : <p>Select a content to view.</p>}
         </Col>

@@ -51,13 +51,15 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!validateForm()) {
       return;
     }
-
+  
     try {
       const res = await loginUser(formData).unwrap();
+      // Store the user info and token in local storage
+      localStorage.setItem('userInfo', JSON.stringify(res)); // Store the whole user info, including the token
       dispatch(setCredentials({ ...res }));
       toast.success('Logged in successfully');
       navigate('/');
@@ -65,10 +67,12 @@ const LoginForm = () => {
       toast.error(err?.data?.message || err.error);
     }
   };
-
+  
   const handleGoogleSuccess = async (response) => {
     try {
       const res = await googleAuth(response.credential).unwrap();
+      // Store the user info and token in local storage
+      localStorage.setItem('userInfo', JSON.stringify(res)); // Store the whole user info, including the token
       dispatch(setCredentials({ ...res }));
       toast.success('Logged in with Google successfully');
       navigate('/');
@@ -76,6 +80,7 @@ const LoginForm = () => {
       toast.error(err?.data?.message || 'Google sign-in failed');
     }
   };
+  
 
   const handleGoogleError = (error) => {
     console.error(error);

@@ -9,3 +9,5 @@ frontend/node_modules/
 
 # Ignore everything inside frontend/src/assets
 frontend/src/assets/
+
+.env

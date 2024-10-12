@@ -11,9 +11,11 @@ import { HttpStatus } from '../utils/HttpStatus.js';
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await UserManagement.loginUser(email, password);
+  
   if (user) {
-    generateTokens(res, user._id);
+    const token = generateTokens(res, user._id); // Store token if you're generating it here
     res.status(HttpStatus.OK).json({
+      token, // Include token in the response
       _id: user._id,
       name: user.name,
       email: user.email,
@@ -27,10 +29,12 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+
 const googleAuthHandler = asyncHandler(async (req, res) => {
   const { token } = req.body;
   const googleUser = await verifyGoogleToken(token);
   let user = await findByEmail(googleUser.email);
+  
   if (!user) {
     user = await createUser({
       email: googleUser.email,
@@ -38,9 +42,11 @@ const googleAuthHandler = asyncHandler(async (req, res) => {
       password: '123456',
     });
   }
-  generateTokens(res, user._id);
+
+  const jwtToken = generateTokens(res, user._id); // Store token if you're generating it here
 
   res.status(HttpStatus.OK).json({
+    token: jwtToken, // Include token in the response
     email: user.email,
     _id: user._id,
     username: user.username,
@@ -50,6 +56,7 @@ const googleAuthHandler = asyncHandler(async (req, res) => {
     profileImage: user.profileImage,
   });
 });
+
 
 const logoutUser = asyncHandler(async (req, res) => {
   res.cookie('jwt', '', {
@@ -111,12 +118,12 @@ const updateUser = asyncHandler(async (req, res) => {
   try {
     const userId = req.user._id;
     const { username, title } = req.body;
-    const profileImage = req.file ? req.file.filename : null;
+    const profileImage = req.file ? req.file.location : null; 
 
     const updateData = { username, title };
 
     if (profileImage) {
-      updateData.profileImage = profileImage;
+      updateData.profileImage = profileImage; // Save S3 URL in DB
     }
 
     const updatedUser = await UserManagement.updateUser(userId, updateData);
@@ -130,7 +137,7 @@ const updateUser = asyncHandler(async (req, res) => {
       _id: updatedUser._id,
       username: updatedUser.username,
       title: updatedUser.title,
-      profileImage: updatedUser.profileImage,
+      profileImage: updatedUser.profileImage, // Return image URL from S3
     });
   } catch (error) {
     console.error('Error updating user:', error);

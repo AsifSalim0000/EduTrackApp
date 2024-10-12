@@ -114,4 +114,10 @@
     margin-bottom: 0.5rem;
     font-weight: bold; /* Bold text for error message */
   }
+  .correct-answer {
+    background-color: lightgreen; /* Green background for correct answers */
+  }
   
+  .incorrect-answer {
+    background-color: lightcoral; /* Light red background for incorrect answers */
+  }

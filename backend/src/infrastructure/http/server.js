@@ -16,17 +16,21 @@ import http from 'http';
 import { Server } from 'socket.io';
 import { notFound, errorHandler } from '../../middlewares/errorMiddleware.js';
 
+dotenv.config();
+
+// Set up the current file paths
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Initialize the Express app
 const app = express();
-dotenv.config();
-connectDB();
+connectDB(); // Connect to the database
 
+// Create the server
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // Adjust your front-end URL
+    origin: "http://localhost:3000", 
     methods: ["GET", "POST"],
   },
 });
@@ -46,15 +50,22 @@ io.on('connection', (socket) => {
     io.to(messageData.chatId).emit('receiveMessage', messageData);
   });
 
-  // Emit typing event with both sender and receiver
+  // Handle typing events
   socket.on('typing', ({ senderId, receiverId }) => {
     io.to(onlineUsers[receiverId]?.socketId).emit('typing', { senderId, receiverId });
   });
 
-  // Emit stopTyping event with both sender and receiver
   socket.on('stopTyping', ({ senderId, receiverId }) => {
     io.to(onlineUsers[receiverId]?.socketId).emit('stopTyping', { senderId, receiverId });
   });
+  socket.on('deleteMessage', async (messageId,chatId) => {
+    try {
+       
+        io.to(chatId).emit('messageDeleted', messageId); 
+    } catch (error) {
+        console.error(error);
+    }
+});
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
@@ -68,34 +79,32 @@ io.on('connection', (socket) => {
   });
 });
 
-
-
-
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(nocache());
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', 
+  credentials: true,
+}));
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || uuidv4(),
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 3600000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-    },
-  })
-);
+app.use(session({
+  secret: process.env.SESSION_SECRET || uuidv4(),
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 3600000, 
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+  },
+}));
 
 app.use('/api/user', routes);
 app.use('/api/instructor', instructorRoutes);
 app.use('/api/admin', adminRoutes);
 
+// Serve frontend in production mode
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
   app.get('*', (req, res) =>
@@ -107,9 +116,11 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+// Error handling middleware
 app.use(notFound);
 app.use(errorHandler);
 
+// Start the server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

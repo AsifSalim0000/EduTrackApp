@@ -151,7 +151,7 @@ const DraggableChapters = ({ chapters, setChapters }) => {
             {chapter.contentId.url ? (
                     <video
                       controls
-                      src={`/src/assets/uploads/videos/${chapter.contentId.url}`}
+                      src={`${chapter.contentId.url}`}
                       className="card-img-top mb-3 w-50"
                      
                     />

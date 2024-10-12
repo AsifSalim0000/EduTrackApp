@@ -68,6 +68,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
     getUserStatus: builder.query({
       query: () => `${USERS_URL}/status`,
     }),
+    refreshAccessToken: builder.mutation({
+      query: () => ({
+        url: `${USERS_URL}/refresh-token`,
+        method: 'POST',
+        credentials: 'include',  // Make sure to include credentials
+      }),
+    }),
 
     getCourses: builder.query({
       query: () => `${USERS_URL}/courses`,
@@ -185,7 +192,31 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
-    
+    deleteMessage: builder.mutation({
+      query: (messageId) => ({
+        url: `${USERS_URL}/messages/${messageId}`,
+        method: 'DELETE',
+      }),
+    }),
+    updateCourseProgress: builder.mutation({
+      query: ({ userId, courseId, currentLesson, completedLessons, progress }) => ({
+        url: `${USERS_URL}/courseProgress`,
+        method: 'PUT',
+        body: { userId, courseId, currentLesson, completedLessons, progress },
+      }),
+    }),
+    markContentAsComplete: builder.mutation({
+      query: ({ courseId, contentId }) => ({
+        url: `${USERS_URL}/mark-as-complete`,
+        method: 'POST',
+        body: { courseId, contentId },
+      }),
+
+      invalidatesTags: ['CourseProgress'],
+    }),
+    getUserCourseProgress: builder.query({
+      query: (userId) => `${USERS_URL}/course-progress`,
+    }),
 
   }),
 });
@@ -201,6 +232,7 @@ export const {
   useResetPasswordMutation,
   useVerifyForgotOtpMutation,
   useGetUserStatusQuery,
+  useRefreshAccessTokenMutation,
   useGetCoursesQuery, 
   useGetCourseByIdQuery, 
   useGetCartQuery,
@@ -221,6 +253,10 @@ export const {
   useSendMessageMutation,
   useAddReviewMutation,
   useGetCourseReviewQuery,
-  useGetUserReviewForCourseQuery
+  useGetUserReviewForCourseQuery,
+  useDeleteMessageMutation,
+  useUpdateCourseProgressMutation,
+  useMarkContentAsCompleteMutation,
+  useGetUserCourseProgressQuery
 } = userApiSlice;
 

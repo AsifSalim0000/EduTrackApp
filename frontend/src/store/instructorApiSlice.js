@@ -65,6 +65,22 @@ export const instructorApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    deleteCourse: builder.mutation({
+      query: (courseId) => ({
+        url: `${INSTRUCTOR_URL}/courses/${courseId}`,
+        method: 'PATCH', 
+        body: { isDeleted: true },
+      }),
+      invalidatesTags: ['Courses'], // Invalidate cached courses
+    }),
+    toggleLiveCourse: builder.mutation({
+      query: ({ courseId, isLive }) => ({
+        url: `${INSTRUCTOR_URL}/courses/${courseId}/live`,
+        method: 'PATCH',
+        body: { isLive },
+      }),
+      invalidatesTags: ['Courses'],
+    }),
   }),
 });
 
@@ -77,5 +93,7 @@ export const {
   useSaveChaptersMutation,
   useUploadVideoMutation, 
   useFetchStudentsQuery,
-  useGetDashboardInfoQuery
+  useGetDashboardInfoQuery,
+  useDeleteCourseMutation,
+   useToggleLiveCourseMutation
 } = instructorApiSlice;

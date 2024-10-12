@@ -16,7 +16,7 @@ const UserDashboardLayout = () => {
         <Col md={2} className="text-center">
           <img
             className="rounded-circle profile-pic"
-            src={`/src/assets/uploads/${userInfo.profileImage}` || defaultimage}
+            src={`${userInfo.profileImage}` || defaultimage}
             alt="Profile"
           />
         </Col>

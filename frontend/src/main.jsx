@@ -45,6 +45,7 @@ import OrderHistory from './pages/user/OrderHistory';
 import Wishlist from './pages/user/Wishlist';
 import ChatApp from './pages/user/ChatApp';
 import InstructorChatApp from './pages/instructor/InstructorChatApp';
+import AdminCourses from './pages/admin/AdminCourses';
 
 
 const router = createBrowserRouter(
@@ -102,6 +103,7 @@ const router = createBrowserRouter(
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="instructors" element={<AdminTeachers />} />
           <Route path="students" element={<AdminStudents />} />
+          <Route path="courses" element={<AdminCourses />} />
         </Route>
       </Route>
 

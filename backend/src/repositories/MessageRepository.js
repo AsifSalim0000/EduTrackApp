@@ -6,19 +6,17 @@ import Instructor from '../domain/Instructor.js';
 import Order from '../domain/Order.js';
 import Course from '../domain/Course.js';
 
-// Find a chat between a user and an instructor
 const findChat = async (userId, receiverId) => {
   return await Chat.findOne({
     users: { $all: [userId, receiverId] }
   });
 };
 
-// Create a new chat
 const createChat = async (users) => {
   return await Chat.create({ users });
 };
 
-// Create a new message in a chat
+
 const createMessage = async (sender, content, chatId) => {
     const newMessage = await Message.create({
       sender,
@@ -32,14 +30,12 @@ const createMessage = async (sender, content, chatId) => {
   };
   
 
-// Find all messages in a chat
 const findMessages = async (chatId) => {
   return await Message.find({ chat: chatId })
     .populate('sender', 'username profileImage')
     .sort({ createdAt: 1 });
 };
 
-// Find courses for a user
 const findCoursesByUser = async (userId) => {
   return await MyCourses.findOne({ userId })
     .populate({
@@ -84,7 +80,6 @@ const getStudentsByInstructorId = async (instructorId) => {
       }
     });
 
-    // Convert Map to an array of students
     const uniqueStudents = Array.from(studentMap.values());
 
     return uniqueStudents;
@@ -92,6 +87,13 @@ const getStudentsByInstructorId = async (instructorId) => {
     throw new Error('Error fetching students by instructor ID');
   }
 };
+const deleteMessageById = async (messageId) => {
+  return await Message.findByIdAndDelete(messageId);
+};
+
+const findMessageById = async (messageId) => {
+  return await Message.findById(messageId);
+};
 
 
-export { findChat, createChat, createMessage, findMessages, findCoursesByUser, findInstructorsByUserIds,getStudentsByInstructorId };
+export { findChat, createChat, createMessage, findMessages, findCoursesByUser, findInstructorsByUserIds,getStudentsByInstructorId, deleteMessageById, findMessageById };

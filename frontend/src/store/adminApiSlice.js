@@ -51,6 +51,23 @@ export const adminApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    fetchAllCoursesForAdmin: builder.query({
+      query: ({ page, searchTerm }) => `${ADMIN_URL}/courses?page=${page}&search=${searchTerm}`,
+    }),
+    blockCourse: builder.mutation({
+      query: (courseId) => ({
+        url: `${ADMIN_URL}/courses/${courseId}/block`,
+        method: 'POST',
+      }),
+    }),
+    unblockCourse: builder.mutation({
+      query: (courseId) => ({
+        url: `${ADMIN_URL}/courses/${courseId}/unblock`,
+        method: 'POST',
+      }),
+    }),
+
+
   }),
 });
 
@@ -61,5 +78,8 @@ export const {
   useToggleBlockStudentMutation,
   useAcceptInstructorRequestMutation,
   useRejectInstructorRequestMutation,
-  useGetAdminDashboardInfoQuery
+  useGetAdminDashboardInfoQuery,
+  useFetchAllCoursesForAdminQuery,
+   useBlockCourseMutation,
+    useUnblockCourseMutation
 } = adminApiSlice;

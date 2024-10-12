@@ -1,7 +1,8 @@
-import { getCourses, createCourse, updateCourse, findCourseById } from '../repositories/InstructorCourseRepository.js';
+import { getCourses, createCourse, updateCourse, findCourseById, deleteCourse, toggleLiveCourse } from '../repositories/InstructorCourseRepository.js';
 import Course from '../domain/Course.js';
-import {countCourses, findCourses, getAllCourses,findUserCourseById} from '../repositories/CourseRepository.js';
+import {countCourses, findCourses, getAllCourses,findUserCourseById, unblockCourse, blockCourse, getAllCoursesForAdmin} from '../repositories/CourseRepository.js';
 import {findMyCoursesByUserId, findUserEnrolledCourse} from '../repositories/MyCoursesRepository.js'
+import { loginUser } from '../controllers/UserController.js';
 
 const fetchAllCourses = async (userId,page, search) => {
   try {
@@ -49,7 +50,7 @@ const updateCourseContents = async (courseId, contents) => {
   }));
 
   
-  const course = await Course.findByIdAndUpdate(   //ineed this to separate into repository !!!!!
+  const course = await Course.findByIdAndUpdate(
     courseId, 
     { contents: updatedContents }, 
     { new: true, runValidators: true }
@@ -100,4 +101,41 @@ const getMyCourseByIdUseCase = async (userId, courseId) => {
 
   return course;
 };
-export default {fetchCourses,addCourse,fetchCourseDetails,updateCourseDetails,updateCourseContents,fetchAllCourses ,getMyCourses,getMyCourseByIdUseCase}
+
+const fetchAllCoursesForAdmin = async ({ page, searchTerm }) => {
+  const limit = 10; 
+  const { courses, totalCourses } = await getAllCoursesForAdmin({ page, limit, search: searchTerm });
+  const totalPages = Math.ceil(totalCourses / limit);
+  
+  return { courses, totalPages };
+};
+
+const blockCourseById = async (courseId) => {
+  const updatedCourse = await blockCourse(courseId);
+  if (!updatedCourse) {
+      throw new Error('Course not found');
+  }
+  return updatedCourse;
+};
+
+const unblockCourseById = async (courseId) => {
+  const updatedCourse = await unblockCourse(courseId);
+  if (!updatedCourse) {
+      throw new Error('Course not found');
+  }
+  return updatedCourse;
+};
+const softDeleteCourse = async (courseId) => {
+  const course = await findCourseById(courseId);
+  if (!course) throw new Error('Course not found');
+  return await deleteCourse(courseId);
+};
+
+const handleToggleLiveCourse = async (courseId, isLive) => {
+  const course = await findCourseById(courseId);
+  if (!course) throw new Error('Course not found');
+  return await toggleLiveCourse(courseId, isLive);
+};
+export default {fetchCourses,addCourse,fetchCourseDetails,updateCourseDetails,updateCourseContents,fetchAllCourses ,getMyCourses,getMyCourseByIdUseCase,
+  fetchAllCoursesForAdmin,blockCourseById,unblockCourseById,
+   softDeleteCourse,handleToggleLiveCourse}

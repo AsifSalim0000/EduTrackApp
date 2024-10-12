@@ -17,8 +17,21 @@ const createCart = async (userId, courseId) => {
 const addItemToCart = async (userId, courseId) => {
   const cart = await findCartByUserId(userId);
   if (!cart) return null;
-  cart.items.push({ courseId });
-  return await cart.save();
+
+  console.log("userId:", userId);
+  console.log("courseId to add:", courseId);
+
+  const courseExists = cart.items.some(item => {
+    console.log("Existing courseId in cart:", item.courseId._id);
+    return item.courseId._id.toString() === courseId.toString(); 
+  });
+
+  if (!courseExists) {
+    cart.items.push({ courseId });
+    return await cart.save();
+  }
+
+  return cart;
 };
 
 const updateCartTimestamp = async (cartId) => {

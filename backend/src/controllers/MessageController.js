@@ -1,9 +1,7 @@
-// MessageController.js
 import asyncHandler from 'express-async-handler';
-import { sendMessageUseCase, getMessagesUseCase, fetchMyTeachersUseCase, fetchStudentsForInstructor } from '../usecases/MessageUseCases.js';
+import { sendMessageUseCase, getMessagesUseCase, fetchMyTeachersUseCase, fetchStudentsForInstructor, deleteMessage } from '../usecases/MessageUseCases.js';
 import { HttpStatus } from '../utils/HttpStatus.js';
 
-// Controller for sending a message
 const sendMessage = asyncHandler(async (req, res) => {
   const { content, receiverId } = req.body;
   const userId = req.user._id;
@@ -17,7 +15,6 @@ const sendMessage = asyncHandler(async (req, res) => {
   }
 });
 
-// Controller for fetching messages in a chat
 const getMessages = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { receiverId } = req.query;
@@ -31,7 +28,6 @@ const getMessages = asyncHandler(async (req, res) => {
   }
 });
 
-// Controller for fetching teachers
 const fetchMyTeachers = asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
@@ -55,5 +51,15 @@ const getStudentsByInstructor = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch students' });
   }
 };
+const deleteMessageController = async (req, res) => {
+  const { messageId } = req.params;
 
-export { sendMessage, getMessages, fetchMyTeachers,getStudentsByInstructor };
+  try {
+    await deleteMessage(messageId);
+    return res.status(200).json({ message: 'Message deleted successfully' });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export { sendMessage, getMessages, fetchMyTeachers,getStudentsByInstructor,deleteMessageController };

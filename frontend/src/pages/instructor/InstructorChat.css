@@ -151,3 +151,43 @@
   color: white;
   border: none;
 }
+.instructor-typing-indicator {
+  display: flex;
+  align-items: center;
+  font-size: 1rem; /* Adjust font size as needed */
+}
+
+.dott {
+  animation: jump 1s infinite;
+  margin: 0 2px; /* Space between dotts */
+  opacity: 0;
+  color: #272525;
+}
+
+.dott:nth-child(1) {
+  animation-delay: 0s;
+}
+.dott:nth-child(2) {
+  animation-delay: 0.2s; /* Slight delay for each dott */
+}
+.dott:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes jump {
+  0% {
+    transform: translateY(0);
+    color: #131313;
+    opacity: 0;
+  }
+  30% {
+    transform: translateY(-10px);
+    color: #111010;
+    opacity: 1; /* Fully visible */
+  }
+  100% {
+    transform: translateY(0);
+    color: #1a1a1d;
+    opacity: 0; /* Fade out */
+  }
+}

@@ -11,7 +11,7 @@ const AdminSidebar = ({ activeItem }) => {
       style={{ width: '250px', minHeight: '100vh', position: 'fixed', left: 0, top: 0 }}
     >
       <Navbar.Brand href="/" className="mb-4 text-white">
-        Admin Panel
+        EduTrack
       </Navbar.Brand>
       <Nav className="flex-column">
         <Nav.Link

@@ -9,8 +9,7 @@ const HomePage = () => {
     <div>
       <HeroSection/>
       <NewCourses />
-      
-      <hr />
+     
       <Footer />
     </div>
   );

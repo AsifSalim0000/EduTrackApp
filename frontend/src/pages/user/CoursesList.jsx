@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { useGetMyCoursesQuery } from '../../store/userApiSlice';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; 
+import { useGetMyCoursesQuery, useGetUserCourseProgressQuery } from '../../store/userApiSlice'; 
 import CourseCard from './CourseCard';
 
 const CoursesList = () => {
@@ -8,13 +8,15 @@ const CoursesList = () => {
   const [limit] = useState(6); 
   const [searchQuery, setSearchQuery] = useState('');
 
-  const navigate = useNavigate(); // Initialize the navigate hook
+  const navigate = useNavigate(); 
 
-  const { data: coursesData, isLoading, isError, error } = useGetMyCoursesQuery({
+  const { data: coursesData, isLoading: coursesLoading, isError: coursesError, error: coursesErrorMsg } = useGetMyCoursesQuery({
     page,
     limit,
     search: searchQuery,
   });
+
+  const { data: progressData, isLoading: progressLoading } = useGetUserCourseProgressQuery();
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
@@ -22,19 +24,25 @@ const CoursesList = () => {
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
-    setPage(1); // Reset to page 1 on new search
+    setPage(1); 
   };
 
-  if (isLoading) {
+  if (coursesLoading || progressLoading) {
     return <p>Loading courses...</p>;
   }
 
-  if (isError) {
-    return <p>Error fetching courses: {error.message}</p>;
+  if (coursesError) {
+    return <p>Error fetching courses: {coursesErrorMsg.message}</p>;
   }
 
   const { courses, totalCourses } = coursesData || { courses: [], totalCourses: 0 };
   const totalPages = Math.ceil(totalCourses / limit);
+
+  // Map progress to courses
+  const progressMap = {};
+  progressData?.forEach((progress) => {
+    progressMap[progress.courseId._id] = Math.floor(progress.progress);
+  });
 
   return (
     <div className="container mt-5">
@@ -51,14 +59,12 @@ const CoursesList = () => {
       </div>
 
       <div className="row">
-
         {courses.map((course) => (
-          <div key={course.id} className="col-md-4">
-        
+          <div key={course.id} className="col-md-4 mb-3">
             <CourseCard
               title={course.title}
               description={course.description}
-              progress={course.progress}
+              progress={progressMap[course._id] || 0} // Use progress from map or 0 if not found
               thumbnail={course.thumbnail}
               onClick={() => {
                 navigate(`/my-course/${course._id}`); 

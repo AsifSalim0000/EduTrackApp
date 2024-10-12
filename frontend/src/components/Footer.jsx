@@ -3,9 +3,9 @@ import { Button, Container, Form, Row, Col } from 'react-bootstrap';
 
 const Footer = () => {
   return (
-    <footer className="bg-light text-dark py-1 border-top mt-5">
-      <Container className='mt-5'>
-        <Row>
+    <>
+
+        <Row className='mt-5 bg-light text-dark py-1 px-5 border-top mt-5'>
           <Col md={4}>
             <h5>EduTrack</h5>
             <Form.Group controlId="formBasicEmail">
@@ -40,8 +40,8 @@ const Footer = () => {
             </ul>
           </Col>
         </Row>
-      </Container>
-    </footer>
+
+    </>
   );
 };
 

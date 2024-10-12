@@ -1,5 +1,5 @@
 
-import { findChat, createChat, createMessage, findMessages, findCoursesByUser, findInstructorsByUserIds, getStudentsByInstructorId } from '../repositories/MessageRepository.js';
+import { findChat, createChat, createMessage, findMessages, findCoursesByUser, findInstructorsByUserIds, getStudentsByInstructorId, findMessageById, deleteMessageById } from '../repositories/MessageRepository.js';
 
 const sendMessageUseCase = async (userId, content, receiverId) => {
   let chat = await findChat(userId, receiverId);
@@ -8,18 +8,14 @@ const sendMessageUseCase = async (userId, content, receiverId) => {
     chat = await createChat([userId, receiverId]);
   }
 
-  // Create and save a new message
   const newMessage = await createMessage(userId, content, chat._id);
 
-  // Update the latest message in the chat
   chat.latestMessage = newMessage._id;
   await chat.save();
 
-  // Return the populated message
   return newMessage;
 };
 
-// Use case for getting messages in a chat
 const getMessagesUseCase = async (userId, receiverId) => {
   const chat = await findChat(userId, receiverId);
 
@@ -27,11 +23,9 @@ const getMessagesUseCase = async (userId, receiverId) => {
     throw new Error('Chat not found or you are not a participant in this chat.');
   }
 
-  // Fetch messages for the chat
   return await findMessages(chat._id);
 };
 
-// Use case for fetching teachers
 const fetchMyTeachersUseCase = async (userId) => {
   const myCourses = await findCoursesByUser(userId);
 
@@ -52,5 +46,14 @@ const fetchStudentsForInstructor = async (instructorId) => {
     throw new Error('Failed to retrieve students for the instructor');
   }
 };
+const deleteMessage = async (messageId) => {
+  
+  const message = await findMessageById(messageId);
+  if (!message) {
+    throw new Error('Message not found');
+  }
 
-export { sendMessageUseCase, getMessagesUseCase, fetchMyTeachersUseCase,fetchStudentsForInstructor };
+  return await deleteMessageById(messageId);
+};
+
+export { sendMessageUseCase, getMessagesUseCase, fetchMyTeachersUseCase,fetchStudentsForInstructor, deleteMessage };

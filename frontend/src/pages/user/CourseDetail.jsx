@@ -94,11 +94,11 @@ const CourseDetail = () => {
                 muted
                 loop
               >
-                <source src={`/src/assets/uploads/videos/${trailer}`} type="video/mp4" />
+                <source src={`${trailer}`} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             ) : (
-              <Card.Img variant="top" src={`/src/assets/uploads/${thumbnail}`} alt="Course Thumbnail" />
+              <Card.Img variant="top" src={`${thumbnail}`} alt="Course Thumbnail" />
             )}
           </Card>
         </Col>

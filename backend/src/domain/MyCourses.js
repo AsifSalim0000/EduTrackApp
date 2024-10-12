@@ -16,7 +16,7 @@ const myCoursesSchema = new mongoose.Schema({
             enrolledAt: {
                 type: Date,
                 default: Date.now
-            }
+            },
         }
     ],
     lastAccessed: {

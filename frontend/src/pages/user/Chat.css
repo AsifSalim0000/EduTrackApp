@@ -1,13 +1,12 @@
-/* Chat Container */
+
 .chat-container {
     display: flex;
-    height: 85vh;
+    height: 75vh;
     background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
   }
   
-  /* Sidebar (User list) */
   .chat-sidebar {
     background: linear-gradient(135deg, #f7f4f4, #d7d7d7b7);
     border-top-left-radius: 10px;

@@ -18,7 +18,7 @@ const AccountSettings = () => {
 
   useEffect(() => {
     if (userInfo.profileImage) {
-      setImagePreview(`/src/assets/uploads/${userInfo.profileImage}`);
+      setImagePreview(`${userInfo.profileImage}`);
     } else {
       setImagePreview(defaultAvatar);
     }

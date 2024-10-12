@@ -71,7 +71,7 @@ const OrderHistory = () => {
                   <Row key={item.courseId} className="py-3 order-item">
                     <Col md={3}>
                       <img
-                        src={`/src/assets/uploads/${item.courseId.thumbnail}`}
+                        src={`${item.courseId.thumbnail}`}
                         alt={item.courseId.title}
                         className="img-fluid"
                       />

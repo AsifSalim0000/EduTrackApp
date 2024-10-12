@@ -2,8 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Chat.css';
 import { useSelector } from 'react-redux'; 
-import { useFetchTeachersQuery, useSendMessageMutation, useGetLiveUpdatesQuery } from '../../store/userApiSlice';
+import { useFetchTeachersQuery, useSendMessageMutation, useGetLiveUpdatesQuery,useDeleteMessageMutation } from '../../store/userApiSlice';
 import io from 'socket.io-client';
+import Picker from 'emoji-picker-react';
+import { BsFillMicFill } from 'react-icons/bs';
+import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 
 const socket = io('http://localhost:5000');
 
@@ -16,7 +20,12 @@ function ChatApp() {
   const [newMessage, setNewMessage] = useState('');
   const [onlineUsers, setOnlineUsers] = useState({});
   const [typingStatuses, setTypingStatuses] = useState({});
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState(null); 
   const chatBodyRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const [deleteMessage] = useDeleteMessageMutation();
 
   const { data: liveUpdates, isFetching: fetchingMessages } = useGetLiveUpdatesQuery({
     chatId: selectedTeacher?._id, 
@@ -29,6 +38,9 @@ function ChatApp() {
   useEffect(() => {
     socket.on('receiveMessage', (newMessage) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
+      toast.success('Message recieved!', {
+        position: toast.POSITION.BOTTOM_RIGHT,
+      });
     });
 
     socket.on('onlineUsers', (users) => {
@@ -92,12 +104,13 @@ function ChatApp() {
         chatId: selectedTeacher._id, 
         receiverId: selectedTeacher.userId._id,
       };
-  
+
       const { data } = await sendMessage(messageData); 
       socket.emit('sendMessage', data);
       setMessages((prevMessages) => [...prevMessages]);
       setNewMessage('');  
-      socket.emit('stopTyping', selectedTeacher.userId._id); // Stop typing when message is sent
+      socket.emit('stopTyping', selectedTeacher.userId._id); 
+      
     }
   };
 
@@ -109,7 +122,7 @@ function ChatApp() {
     if (selectedTeacher) {
       socket.emit('typing', {
         senderId: userInfo._id,
-        receiverId: selectedTeacher.userId._id, // Include selected teacher's ID
+        receiverId: selectedTeacher.userId._id, 
       });
     }
   
@@ -126,6 +139,81 @@ function ChatApp() {
       }, 1000)
     );
   };
+  const handleEmojiClick = (emojiObject) => {
+    setNewMessage((prevMessage) => prevMessage + emojiObject.emoji);
+    setShowEmojiPicker(false);
+  };
+  const handleStartRecording = () => {
+    setIsRecording(true);
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        mediaRecorderRef.current = new MediaRecorder(stream);
+        const chunks = [];
+        mediaRecorderRef.current.ondataavailable = e => chunks.push(e.data);
+        mediaRecorderRef.current.onstop = () => {
+          const audioBlob = new Blob(chunks, { type: 'audio/wav' });
+          setAudioBlob(audioBlob); // Save recorded audio
+          setIsRecording(false);
+        };
+        mediaRecorderRef.current.start();
+      })
+      .catch(err => {
+        console.error('Error accessing media devices.', err);
+        setIsRecording(false);
+      });
+  };
+
+  const handleStopRecording = () => {
+    mediaRecorderRef.current.stop();
+  };
+
+  const handleSendAudioMessage = () => {
+    if (audioBlob && selectedTeacher) {
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'audioMessage.wav');
+      formData.append('sender', userInfo._id);
+      formData.append('chatId', selectedTeacher._id);
+      formData.append('receiverId', selectedTeacher.userId._id);
+
+      sendMessage(formData);
+      socket.emit('sendMessage', { ...formData, contentType: 'audio' });
+      setAudioBlob(null); 
+    }
+  };
+  const handleSelectMessage = (msg) => {
+    Swal.fire({
+      title: 'Do you want to delete this message?',
+      text: "This will delete the message for everyone.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleDeleteMessage(msg._id); 
+      }
+    });
+  };
+  const handleDeleteMessage = async (messageId) => {
+    try {
+      await deleteMessage(messageId).unwrap(); 
+      setMessages((prevMessages) => prevMessages.filter(msg => msg._id !== messageId)); 
+      socket.emit('deleteMessage',  messageId, selectedTeacher._id);
+      Swal.fire(
+        'Deleted!',
+        'The message has been deleted for everyone.',
+        'success'
+      );
+    } catch (error) {
+      Swal.fire(
+        'Error!',
+        'There was an error deleting the message. Please try again later.',
+        'error'
+      );
+    }
+  };
+   
 
   useEffect(() => {
     if (selectedTeacher) {
@@ -144,6 +232,24 @@ function ChatApp() {
     }
   }, [messages]);
 
+    useEffect(() => {
+    if (chatBodyRef.current) {
+      chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    socket.on('messageDeleted', (deletedMessageId) => {
+      setMessages((prevMessages) => prevMessages.filter(msg => msg._id !== deletedMessageId));
+    });
+
+    return () => {
+      socket.off('messageDeleted');
+    };
+  }, []);
+
+
+
   useEffect(() => {
     if (liveUpdates && !fetchingMessages) {
       setMessages(liveUpdates);
@@ -158,7 +264,7 @@ function ChatApp() {
   return (
     <div className="container container-fluid py-4">
       <div className="chat row">
-        <div className="col-md-3 chat-sidebar p-0">
+        <div className="col-sm-5 col-md-3 chat-sidebar p-0">
           <div className="sidebar-header p-3">
             <input className="form-control search-input" type="text" placeholder="Search" />
           </div>
@@ -178,7 +284,7 @@ function ChatApp() {
                 >
                   <div className="user-avatar">
                     <img 
-                      src={`/src/assets/uploads/${teacher.userId.profileImage}`} 
+                      src={`${teacher.userId.profileImage}`} 
                       alt=""
                       style={{ width: "50px", height: "50px", borderRadius: "50%" }} 
                     />
@@ -197,7 +303,7 @@ function ChatApp() {
             )}
           </div>
         </div>
-        <div className="col-md-9 chat-window h-100">
+        <div className="col-sm-7 col-md-9 chat-window h-100">
           {selectedTeacher ? (
             <>
               <div className="chat-header p-3">
@@ -211,12 +317,17 @@ function ChatApp() {
               </div>
               <div className="chat-body" ref={chatBodyRef} style={{ overflowY: 'auto', minHeight: '70vh', maxHeight: '70vh' }}>
                 {messages.map((msg, index) => (
-                  <div key={index} className={`message ${msg.sender._id === userInfo._id ? 'sent' : 'received'}`}>
+                  <div 
+                    key={index} 
+                    className={`message ${msg.sender._id === userInfo._id ? 'sent' : 'received'}`}
+                    onClick={() => handleSelectMessage(msg)} 
+                  >
                     {msg.content}
                     <span className="message-timestamp">{formatTime(msg.createdAt)}</span>
                   </div>
                 ))}
               </div>
+
               <div className="chat-footer p-3 d-flex">
                 <input 
                   type="text"
@@ -226,8 +337,24 @@ function ChatApp() {
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                   placeholder="Type a message..."
                 />
+                <button onClick={() => setShowEmojiPicker((prev) => !prev)} className="btn btn-light ms-2">
+                  😊
+                </button>
+                <button onClick={isRecording ? handleStopRecording : handleStartRecording} className="btn btn-primary ms-2">
+                  {isRecording ? 'Stop Recording' : 'Record Audio'}
+                </button>
+                <button onClick={handleSendAudioMessage} className="btn btn-success ms-2">
+                  Send Audio
+                </button>
                 <button className="btn btn-primary ms-2" onClick={handleSendMessage}>Send</button>
+
               </div>
+              {showEmojiPicker && (
+                <div className="emoji-picker-container">
+                  <Picker onEmojiClick={handleEmojiClick} />
+                </div>
+              )}
+
             </>
           ) : (
             <div className="no-chat">
@@ -238,6 +365,7 @@ function ChatApp() {
       </div>
     </div>
   );
+
 }
 
 export default ChatApp;

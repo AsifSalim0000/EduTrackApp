@@ -4,7 +4,7 @@ import User from '../domain/User.js';
 
 const protect = asyncHandler(async (req, res, next) => {
   let token;
-
+  
   if (req.cookies.jwt) {
 
     token = req.cookies.jwt;

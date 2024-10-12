@@ -121,7 +121,7 @@ const Checkout = () => {
                   {cartDetails?.items.map((item, index) => (
                     <tr key={index}>
                       <td className="d-flex align-items-center">
-                        <Image src={`/src/assets/uploads/${item.courseId.thumbnail}`} alt={item.name} width={100} height={60} className="me-4" rounded />
+                        <Image src={`${item.courseId.thumbnail}`} alt={item.name} width={100} height={60} className="me-4" rounded />
                         <div><p>{item.courseId.title}</p></div>
                       </td>
                       <td>₹{item.courseId.price}</td>

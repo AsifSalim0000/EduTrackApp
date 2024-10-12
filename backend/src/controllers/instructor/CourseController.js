@@ -3,6 +3,7 @@ import courseUseCase from '../../usecases/courseUsecase.js';
 import VideoContent from '../../domain/VideoContent.js';
 import TextContent from '../../domain/TextContent.js';
 import QuizContent from '../../domain/QuizContent.js';
+import BaseContent from '../../domain/Content.js';
 
 
 const getCoursesController = asyncHandler(async (req, res) => {
@@ -19,7 +20,7 @@ const getCoursesController = asyncHandler(async (req, res) => {
 
 const createCourseController = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
-  const { filename: thumbnail } = req.file; 
+  const thumbnail= req.file ? req.file.location:null; 
   const instructor = req.user.id;
   
   try {
@@ -49,10 +50,8 @@ const saveCourseDetails = asyncHandler(async (req, res) => {
     const whatToTeach = JSON.parse(req.body.whatToTeach);
     const contents = JSON.parse(req.body.contents);
     
-    let thumbnail = null;
-    if (req.file) {
-      thumbnail = req.file.filename; 
-    }
+    let thumbnail = req.file?req.file.location: null;
+
     
     const instructor = req.user.id;
 
@@ -120,15 +119,35 @@ const saveCourseDetails = asyncHandler(async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-const uploadVideo= async(req, res) => {
-  
-      if (!req.file) {
-        return res.status(400).send('No file uploaded.');
-      }
-    
-      const videoUrl = `/${req.file.filename}`;
-      
-      res.json({ videoUrl });
-    }
 
-export {getCoursesController,createCourseController,fetchCourse,saveCourseDetails,uploadVideo}
+const uploadVideo = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('No file uploaded.');
+  }
+
+  // The file URL from S3
+  const videoUrl = req.file.location;
+
+  res.json({ videoUrl });  // Return the uploaded video's URL
+};
+const deleteCourseController = async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const deletedCourse = await courseUseCase.softDeleteCourse(courseId);
+    return res.status(200).json({ success: true, course: deletedCourse });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const toggleLiveCourseController = async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const { isLive } = req.body;
+    const updatedCourse = await courseUseCase.handleToggleLiveCourse(courseId, isLive);
+    return res.status(200).json({ success: true, course: updatedCourse });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+export {getCoursesController,createCourseController,fetchCourse,saveCourseDetails,uploadVideo,deleteCourseController,toggleLiveCourseController}

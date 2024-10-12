@@ -1,0 +1,48 @@
+/* Updated class names to avoid conflicts */
+.admin-courses-page {
+    background-color: #f8f9fa;
+  }
+  
+  .admin-courses-page .card {
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+  }
+  
+  .admin-courses-page .card-img-top {
+    height: 150px;
+    object-fit: cover;
+  }
+  
+  .admin-courses-page .card-footer {
+    background-color: #fff;
+    border-top: none;
+  }
+  
+  .admin-courses-page .ellipsis {
+    background: transparent;
+    border: none;
+  }
+  
+  .admin-courses-page .ellipsis i {
+    font-size: 1.5rem;
+    color: #6c757d;
+  }
+  
+  .admin-courses-page .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  
+  .admin-courses-page .card-text {
+    font-size: 0.875rem;
+    color: #28a745;
+  }
+  
+  .admin-courses-page .pagination {
+    margin-top: 20px;
+  }
+  
+  .admin-courses-page .form-control {
+    max-width: 300px;
+  }
+  

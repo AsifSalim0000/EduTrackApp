@@ -5,7 +5,7 @@ import './CourseCard.css';
 const CourseCard = ({ image, title, price, rating, isPurchased, onAddToCart, onAddToWishlist, onClick, onWatchLecture }) => (
   <Card className="course-card h-100">
     <div className="image-container" onClick={onClick}>
-      <Card.Img variant="top" src={`/src/assets/uploads/${image}`} className="course-image" />
+      <Card.Img variant="top" src={`${image}`} className="course-image" />
       <div className="overlay">
         {isPurchased ? (
           

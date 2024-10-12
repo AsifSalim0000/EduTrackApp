@@ -2,11 +2,23 @@ import React from 'react';
 
 function CourseCard({ title, description, progress, thumbnail, onClick }) {
   return (
-    <div className="card mb-4 shadow-sm">
-      <img src={`/src/assets/uploads/${thumbnail}`} className="card-img-top" alt={title} />
+    <div className="card h-100 my-4 shadow-sm overflow-hidden">
+      <img src={`${thumbnail}`} className="card-img-top" alt={title} />
       <div className="card-body">
         <h5 className="card-title">{title}</h5>
-        <p className="card-text">{description}</p>
+        <p
+         className="card-text"
+         style={{
+         overflow: 'hidden',
+         textOverflow: 'ellipsis',
+         display: '-webkit-box',
+          WebkitLineClamp: 3, 
+          WebkitBoxOrient: 'vertical', 
+              }}
+            >
+  {description}
+</p>
+
         <div className="progress">
           <div
             className="progress-bar"
@@ -19,7 +31,7 @@ function CourseCard({ title, description, progress, thumbnail, onClick }) {
             {progress}%
           </div>
         </div>
-        <button className="btn btn-primary" onClick={onClick}>
+        <button className="btn btn-primary mt-3" onClick={onClick}>
           Watch Lecture
         </button>
       </div>

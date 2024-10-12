@@ -1,4 +1,5 @@
 import Course from "../domain/Course.js";
+import CourseProgress from "../domain/CourseProgress.js";
 import MyCourses from "../domain/MyCourses.js";
 
 const getAllCourses = async (userId, page, search) => {
@@ -28,7 +29,7 @@ const getAllCourses = async (userId, page, search) => {
   }
 };
 
-  const findCourses = async ({ courseIds, search, skip, limit }) => {
+const findCourses = async ({ courseIds, search, skip, limit }) => {
     return await Course.find({
       _id: { $in: courseIds },
       title: new RegExp(search, 'i') 
@@ -37,17 +38,62 @@ const getAllCourses = async (userId, page, search) => {
     .limit(Number(limit));
   };
   
-  const countCourses = async ({ courseIds, search }) => {
+const countCourses = async ({ courseIds, search }) => {
     return await Course.countDocuments({
       _id: { $in: courseIds },
       title: new RegExp(search, 'i')
     });
   };
+
 const findUserCourseById = async (courseId) => {
     return await Course.findById(courseId).populate("contents.contentId");
 };
+
 const countAllCourses = async () => {
   return await Course.countDocuments();
 };
 
-export {getAllCourses,findCourses,countCourses,findUserCourseById,countAllCourses}
+
+const getAllCoursesForAdmin = async ({ page = 1, limit = 10, search = '' }) => {
+    const skip = (page - 1) * limit;
+    const query = { isDeleted: false };
+
+    if (search) {
+        query.title = { $regex: search, $options: 'i' }; 
+    }
+  
+    const totalCourses = await Course.countDocuments(query);
+    const courses = await Course.find(query)
+        .populate('instructor', 'name')
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 });
+
+    return { courses, totalCourses };
+};
+
+const blockCourse = async (courseId) => {
+    return Course.findByIdAndUpdate(courseId, { isBlocked: true }, { new: true });
+};
+
+const unblockCourse = async (courseId) => {
+    return Course.findByIdAndUpdate(courseId, { isBlocked: false }, { new: true });
+};
+const getProgressByUserAndCourse = async (userId, courseId) => {
+  return await CourseProgress.findOne({ userId, courseId });
+};
+
+const createProgress = async (progressData) => {
+  return await CourseProgress.create(progressData);
+};
+
+const updateProgress = async (progressId, updatedProgress) => {
+  return await CourseProgress.findByIdAndUpdate(progressId, updatedProgress, { new: true });
+};
+
+const findCourseProgressByUserId = async (userId) => {
+  return await CourseProgress.find({ userId }).populate('courseId');
+};
+
+export {getAllCourses,findCourses,countCourses,findUserCourseById,countAllCourses, getAllCoursesForAdmin,blockCourse,unblockCourse,
+  getProgressByUserAndCourse,createProgress,updateProgress,findCourseProgressByUserId}

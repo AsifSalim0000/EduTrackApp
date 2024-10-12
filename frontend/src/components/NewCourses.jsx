@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Col, Container, Row, Pagination } from 'react-bootstrap';
 import CourseCard from './CourseCard';
-import './CourseCard.css';
 import { useNavigate } from 'react-router-dom';
 import { useGetCoursesQuery, useAddToCartMutation, useAddToWishlistMutation } from '../store/userApiSlice';
 
@@ -51,7 +50,7 @@ const NewCourses = () => {
   if (error) return <p>Failed to load courses</p>;
 
   return (
-    <Container className="new-courses my-5">
+    <Container className=" new-courses my-5 container-fluid h-auto">
       <h2 className="text-center mb-4">New Courses</h2>
       <Row>
         {coursesData.data.map((course) => (

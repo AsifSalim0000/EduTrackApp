@@ -194,7 +194,7 @@ const CourseContentPage = () => {
                 <Card className="p-3">
                   {courseDetails.thumbnail ? (
                     <img
-                      src={`/src/assets/uploads/${courseDetails.thumbnail}`}
+                      src={`${courseDetails.thumbnail}`}
                       className="card-img-top mb-3"
                       alt="Thumbnail"
                     />
@@ -226,7 +226,7 @@ const CourseContentPage = () => {
                   {courseDetails.trailer ? (
                     <video
                       controls
-                      src={`/src/assets/uploads/videos/${courseDetails.trailer}`}
+                      src={`${courseDetails.trailer}`}
                       className="card-img-top mb-3"
                     />
                   ) : (

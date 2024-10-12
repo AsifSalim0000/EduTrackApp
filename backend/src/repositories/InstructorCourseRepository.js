@@ -19,7 +19,6 @@ const getCourses = async (instructorId, page, search) => {
 
 const createCourse = async (courseData) => {
   const newCourse = new Course(courseData);
-  console.log("new Corse",newCourse);
   
   await newCourse.save();
   
@@ -29,7 +28,6 @@ const findCourseById=async(courseId)=> {
     try {
         const course = await Course.findById(courseId)
             .populate('instructor');
-       console.log(course,courseId);
        
         if (course.contents.length > 0) {
             await course.populate('contents.contentId');
@@ -53,5 +51,12 @@ const updateCourse=async(courseId, courseData)=> {
   
   return course;
 }
+const deleteCourse = async (courseId) => {
+  return await Course.findByIdAndUpdate(courseId, { isDeleted: true }, { new: true });
+};
 
-export {getCourses,createCourse,findCourseById,updateCourse}
+const toggleLiveCourse = async (courseId, isLive) => {
+  return await Course.findByIdAndUpdate(courseId, { isLive }, { new: true });
+};
+
+export {getCourses,createCourse,findCourseById,updateCourse,deleteCourse,toggleLiveCourse}
