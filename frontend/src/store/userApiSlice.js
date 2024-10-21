@@ -218,6 +218,17 @@ export const userApiSlice = apiSlice.injectEndpoints({
       query: (userId) => `${USERS_URL}/course-progress`,
     }),
 
+    sendAudio: builder.mutation({
+      query: (formData) => ({
+        url: `${USERS_URL}/upload-audio`,
+        method: 'POST',
+        body: formData,
+        headers: {
+          
+        },
+      }),
+    }),
+
   }),
 });
 
@@ -257,6 +268,7 @@ export const {
   useDeleteMessageMutation,
   useUpdateCourseProgressMutation,
   useMarkContentAsCompleteMutation,
-  useGetUserCourseProgressQuery
+  useGetUserCourseProgressQuery,
+  useSendAudioMutation
 } = userApiSlice;
 

@@ -17,24 +17,53 @@ const createChat = async (users) => {
 };
 
 
-const createMessage = async (sender, content, chatId) => {
+const createMessage = async (sender, content,type,replyTo, chatId) => {
     const newMessage = await Message.create({
       sender,
       content,
+      type,
       chat: chatId,
+      replyTo: replyTo ? replyTo : null,
     });
-  
-    return await Message.findById(newMessage._id)
-      .populate('sender', 'username profileImage')
-      .populate('chat');
-  };
+
+    let query = Message.findById(newMessage._id)
+    .populate('sender', 'username profileImage')
+    .populate('chat');
+
+  if (replyTo) {
+    query = query.populate({
+      path: 'replyTo',   
+      populate: {
+        path: 'sender',  
+        select: 'username', 
+      },
+    });
+  }
+
+  return await query.exec();
+};
   
 
 const findMessages = async (chatId) => {
-  return await Message.find({ chat: chatId })
-    .populate('sender', 'username profileImage')
-    .sort({ createdAt: 1 });
+  
+  const messagesQuery = Message.find({ chat: chatId })
+    .populate('sender', 'username profileImage') 
+    .sort({ createdAt: 1 }); 
+
+  const messagesWithReplyTo = await Message.findOne({ chat: chatId, replyTo: { $exists: true } });
+
+  if (messagesWithReplyTo) {
+    messagesQuery.populate({
+      path: 'replyTo',   
+      populate: {
+        path: 'sender',  
+        select: 'username', 
+      },
+    });
+  }
+  return await messagesQuery.exec();
 };
+
 
 const findCoursesByUser = async (userId) => {
   return await MyCourses.findOne({ userId })

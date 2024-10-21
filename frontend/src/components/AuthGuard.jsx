@@ -43,26 +43,23 @@ const AuthGuard = () => {
 
   useEffect(() => {
     const tokenExpirationCheck = async () => {
-      // Instead of trying to read the cookie directly, make an API call to validate the session
+ 
       try {
-        const result = await refreshAccessToken().unwrap(); // API call to get new access token
+        const result = await refreshAccessToken().unwrap(); 
         if (result) {
           console.log('Access token refreshed successfully', result);
-          refetch(); // Refresh user status
+          refetch(); 
         }
       } catch (error) {
         console.error('Failed to refresh access token', error);
         dispatch(logout()); // Logout if unable to refresh
       }
     };
-  
-    // Check token expiration on load
     tokenExpirationCheck();
   
-    // Set an interval to check every 10 minutes
     const interval = setInterval(() => {
       tokenExpirationCheck();
-    }, 10 * 60 * 1000); // Every 10 minutes
+    }, 10 * 60 * 1000);  
   
     return () => clearInterval(interval);
   }, [refreshAccessToken, refetch, dispatch]);

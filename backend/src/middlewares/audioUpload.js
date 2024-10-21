@@ -3,6 +3,7 @@ import multer from 'multer';
 import multerS3 from 'multer-s3';
 import dotenv from 'dotenv';
 import express from 'express';
+import path from 'path';
 
 dotenv.config();
 

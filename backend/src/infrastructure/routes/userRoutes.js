@@ -7,10 +7,11 @@ import { addCourseToCart, addCourseToWishlist, fetchCart, removeCourseFromWishli
 import { createOrder, createRazorpayOrder,getOrderHistory } from '../../controllers/OrderController.js';
 import { getCoursesByUser,getMyCourseById } from '../../controllers/MyCoursesController.js';
 import upload from '../../middlewares/upload.js';
-import { deleteMessageController, fetchMyTeachers, getMessages, sendMessage } from '../../controllers/MessageController.js';
+import { deleteMessageController, fetchMyTeachers, getMessages, sendAudio, sendMessage } from '../../controllers/MessageController.js';
 import { addReview, getUserReviewForCourse } from '../../controllers/ReviewController.js';
 import { refreshAccessToken } from '../../middlewares/AuthController.js';
 import { handleGetUserCourseProgress, markAsComplete } from '../../controllers/CourseProgressController.js';
+import audioUpload from '../../middlewares/audioUpload.js';
 
 const router = express.Router();
 
@@ -48,5 +49,6 @@ router.post('/refresh-token',refreshAccessToken);
 router.delete('/messages/:messageId',protect, deleteMessageController);
 router.post('/mark-as-complete',protect, markAsComplete);
 router.get('/course-progress',protect, handleGetUserCourseProgress);
+router.post('/upload-audio', audioUpload.single('audio'),sendAudio);
 
 export default router;

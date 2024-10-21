@@ -3,11 +3,12 @@ import { sendMessageUseCase, getMessagesUseCase, fetchMyTeachersUseCase, fetchSt
 import { HttpStatus } from '../utils/HttpStatus.js';
 
 const sendMessage = asyncHandler(async (req, res) => {
-  const { content, receiverId } = req.body;
+  const { content, receiverId,type,replyTo } = req.body;
+
   const userId = req.user._id;
 
   try {
-    const message = await sendMessageUseCase(userId, content, receiverId);
+    const message = await sendMessageUseCase(userId, content,type,replyTo, receiverId);
     res.status(HttpStatus.CREATED).json(message);
   } catch (error) {
     console.error('Error sending message:', error);
@@ -61,5 +62,13 @@ const deleteMessageController = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
-
-export { sendMessage, getMessages, fetchMyTeachers,getStudentsByInstructor,deleteMessageController };
+const sendAudio= async (req,res) => {
+  if (!req.file) {
+    return res.status(400).send('No audio file uploaded.');
+  }
+  res.status(200).send({
+    message: 'Audio file uploaded successfully',
+    fileUrl: req.file.location,
+  });
+}
+export { sendMessage, getMessages, fetchMyTeachers,getStudentsByInstructor,deleteMessageController,sendAudio };

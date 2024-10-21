@@ -116,8 +116,55 @@ const CourseContentPage = () => {
 
   const handleSave = async () => {
     try {
+      // Basic validation
+      if (!courseDetails.title || courseDetails.title.trim() === "") {
+        return Swal.fire({
+          title: 'Validation Error!',
+          text: 'Title is required.',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+        });
+      }
+  
+      if (!courseDetails.description || courseDetails.description.trim() === "") {
+        return Swal.fire({
+          title: 'Validation Error!',
+          text: 'Description is required.',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+        });
+      }
+  
+      if (!courseDetails.price || isNaN(courseDetails.price) || Number(courseDetails.price) <= 0) {
+        return Swal.fire({
+          title: 'Validation Error!',
+          text: 'Price must be a valid positive number.',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+        });
+      }
+  
+      if (!courseDetails.contents || courseDetails.contents.length === 0) {
+        return Swal.fire({
+          title: 'Validation Error!',
+          text: 'Course contents must not be empty.',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+        });
+      }
+  
+      if (!courseDetails.whatToTeach || courseDetails.whatToTeach.length === 0) {
+        return Swal.fire({
+          title: 'Validation Error!',
+          text: 'What you plan to teach must not be empty.',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+        });
+      }
+  
       const formData = new FormData();
   
+      // Append form fields
       formData.append('description', courseDetails.description);
       formData.append('trailer', courseDetails.trailer);
       formData.append('whatToTeach', JSON.stringify(courseDetails.whatToTeach));
@@ -127,39 +174,41 @@ const CourseContentPage = () => {
       if (courseDetails.thumbnail instanceof File) {
         formData.append('thumbnail', courseDetails.thumbnail);
       }
-
+  
       formData.append('title', courseDetails.title);
       formData.append('price', courseDetails.price);
   
-      const res=await saveCourseDetails(formData).unwrap();
-      if(res.success){
+      // Save course details
+      const res = await saveCourseDetails(formData).unwrap();
+      
+      if (res.success) {
         Swal.fire({
           title: 'Success!',
           text: 'Course details and chapters saved successfully!',
           icon: 'success',
           confirmButtonText: 'OK',
         });
-    
+  
         navigate('/instructor/courses');
+      } else {
+        Swal.fire({
+          title: 'Error!',
+          text: res.error,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
       }
-     else{
-      Swal.fire({
-        title: 'Error!',
-        text: res.error,
-        icon: 'error',
-        confirmButtonText: 'OK',
-      });
-     }
     } catch (error) {
       console.error('Failed to save course details or chapters:', error);
       Swal.fire({
         title: 'Error!',
-        text: error,
+        text: 'Failed to save course details or chapters. Please try again.',
         icon: 'error',
         confirmButtonText: 'OK',
       });
     }
   };
+  
 
   return (
     <Container className="mt-5 bg-white shadow p-3">

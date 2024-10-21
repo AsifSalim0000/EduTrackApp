@@ -3,11 +3,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './InstructorChat.css';
 import { useSelector } from 'react-redux';
 import { useFetchStudentsQuery } from '../../store/instructorApiSlice';
-import { useSendMessageMutation, useGetLiveUpdatesQuery, useDeleteMessageMutation } from '../../store/userApiSlice';
+import { useSendMessageMutation, useGetLiveUpdatesQuery, useDeleteMessageMutation,useSendAudioMutation } from '../../store/userApiSlice';
 import io from 'socket.io-client';
 import Picker from 'emoji-picker-react';
 import { BsFillMicFill } from 'react-icons/bs';
 import Swal from 'sweetalert2';
+import { AiOutlineClose } from 'react-icons/ai';
 
 const socket = io('http://localhost:5000');
 
@@ -15,6 +16,7 @@ function InstructorChatApp() {
   const { userInfo } = useSelector((state) => state.auth);
   const { data: students, isFetching: fetchingStudents, isError } = useFetchStudentsQuery();
   const [sendMessage] = useSendMessageMutation();
+  const [sendAudio] = useSendAudioMutation(); 
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -83,11 +85,12 @@ function InstructorChatApp() {
         mediaRecorderRef.current = new MediaRecorder(stream);
         const chunks = [];
         mediaRecorderRef.current.ondataavailable = e => chunks.push(e.data);
+
         mediaRecorderRef.current.onstop = () => {
           const audioBlob = new Blob(chunks, { type: 'audio/wav' });
-          setAudioBlob(audioBlob); // Save recorded audio
+          setAudioBlob(audioBlob);
           setIsRecording(false);
-        };
+        };        
         mediaRecorderRef.current.start();
       })
       .catch(err => {
@@ -100,19 +103,42 @@ function InstructorChatApp() {
     mediaRecorderRef.current.stop();
   };
 
-  const handleSendAudioMessage = () => {
-    if (audioBlob && selectedStudent) {
-      const formData = new FormData();
-      formData.append('audio', audioBlob, 'audioMessage.wav');
-      formData.append('sender', userInfo._id);
-      formData.append('chatId', selectedStudent._id);
-      formData.append('receiverId', selectedStudent.userId._id);
-
-      sendMessage(formData);
-      socket.emit('sendMessage', { ...formData, contentType: 'audio' });
-      setAudioBlob(null); 
+const handleSendAudioMessage = async () => {
+  if (audioBlob && selectedStudent) {
+    if (!(audioBlob instanceof Blob)) {
+      console.error('Audio blob is not valid:', audioBlob);
+      return;
     }
-  };
+    console.log("form data",audioBlob);
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'audioMessage.wav');
+    console.log("form data",formData);
+    
+
+    try {
+    
+      const result = await sendAudio(formData).unwrap();
+      
+
+      const messageData = {
+        sender: userInfo._id,
+        content: result.fileUrl, 
+        chatId: selectedStudent._id,
+        receiverId: selectedStudent.userId._id,
+        type: 'audio', 
+      };
+
+      const { data } = await sendMessage(messageData);
+      socket.emit('sendMessage', data); 
+      setMessages((prevMessages) => [...prevMessages, data]); 
+      setAudioBlob(null); 
+    } catch (error) {
+      console.error('Failed to send audio message:', error);
+    }
+  } else {
+    console.error('No audio to send or teacher not selected.');
+  }
+};
   const handleSelectMessage = (msg) => {
     Swal.fire({
       title: 'Do you want to delete this message?',
@@ -132,7 +158,7 @@ function InstructorChatApp() {
     try {
       await deleteMessage(messageId).unwrap(); 
       setMessages((prevMessages) => prevMessages.filter(msg => msg._id !== messageId)); 
-      socket.emit('deleteMessage',  messageId, selectedStudent._id);
+      socket.emit('deleteMessage',  messageId);
       Swal.fire(
         'Deleted!',
         'The message has been deleted for everyone.',
@@ -146,6 +172,21 @@ function InstructorChatApp() {
       );
     }
   };
+  const [replyMessage, setReplyMessage] = useState(null);
+
+  const handleReplyMessage = (msg) => {
+    setReplyMessage(msg); 
+  };
+  const [openDropdown, setOpenDropdown] = useState(null);
+
+  const toggleDropdown = (index) => {
+    setOpenDropdown((prevState) => (prevState === index ? null : index));
+  };
+  useEffect(() => {
+    socket.on('messageDeleted', (deletedMessageId) => {
+      setMessages((prevMessages) => prevMessages.filter(msg => msg._id !== deletedMessageId));
+    });
+  }, []);
   useEffect(() => {
     socket.on('receiveMessage', (newMessage) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -210,15 +251,6 @@ function InstructorChatApp() {
     }
   }, [messages]);
 
-  useEffect(() => {
-    socket.on('messageDeleted', (deletedMessageId) => {
-      setMessages((prevMessages) => prevMessages.filter(msg => msg._id !== deletedMessageId));
-    });
-
-    return () => {
-      socket.off('messageDeleted');
-    };
-  }, []);
 
   useEffect(() => {
     if (liveUpdates && !fetchingMessages) {
@@ -288,13 +320,58 @@ function InstructorChatApp() {
               </div>
               <div className="chat-body" ref={chatBodyRef} style={{ overflowY: 'auto', minHeight: '70vh', maxHeight: '70vh' }}>
                 {messages.map((msg, index) => (
-                  <div key={index} className={`message ${msg.sender._id === userInfo._id ? 'sent' : 'received'}`} onClick={() => handleSelectMessage(msg)} >
-                    {msg.content}
-                    <span className="message-timestamp">{formatTime(msg.createdAt)}</span>
+                  <div 
+                  key={index} 
+                  className={`row message ${msg.sender._id === userInfo._id ? 'sent' : 'received'}`}
+                >
+                  <div className="message-content col-11">
+                  {msg.replyTo && (
+                          <div className="replied-message bg-white rounded px-3 py-1">
+                            <p className="replied-message-content text-black">{msg.replyTo.sender._id === userInfo._id ? 'You' : msg.replyTo.sender.username} : {msg.replyTo.content}</p>
+                          </div>
+                    )}
+                    {msg.type === 'text' && (
+                      <p>{msg.content}</p>
+                    )}
+                    {msg.type === 'audio' && (
+                      <div className="audio-message">
+                        <audio controls className='w-100'>
+                          <source src={msg.content} type="audio/wav" />
+                          Your browser does not support the audio tag.
+                        </audio>
+                      </div>
+                    )}
                   </div>
+                
+                  <div className="message-options col-1">
+                    <button className="ellipsis-btn" onClick={() => toggleDropdown(index)}>
+                      &#x22EE;
+                    </button>
+                    {openDropdown === index && (
+                      <div className="dropdown-menu">
+                        <button onClick={() => handleReplyMessage(msg)}>Reply</button>
+                        <button onClick={() => handleSelectMessage(msg)}>Delete</button>
+                      </div>
+                    )}
+                  </div>
+
+                  <span className="message-timestamp">{formatTime(msg.createdAt)}</span>
+                </div>
                 ))}
               </div>
-              <div className="chat-footer p-3 d-flex">
+              <div className="chat-footer p-3 d-flex row">
+              {replyMessage && (
+                     <div className="reply-box mb-2 p-2 border rounded bg-light col-12">
+                     <div className="d-flex justify-content-between align-items-center">
+                       <p className="mb-0">Replying to: {replyMessage.content}</p>
+                       <button className="btn btn-sm bg-danger text-white" onClick={() => setReplyMessage(null)}>
+                         <AiOutlineClose></AiOutlineClose>
+                       </button>
+                     </div>
+                   </div>
+            
+                 )}
+                 <div className="d-flex col-12">
                 <input 
                   type="text"
                   className="form-control"
@@ -314,11 +391,13 @@ function InstructorChatApp() {
                 </button>
                 <button className="btn btn-primary ms-2" onClick={handleSendMessage}>Send</button>
               </div>
+              </div>
               {showEmojiPicker && (
                 <div className="emoji-picker-container">
                   <Picker onEmojiClick={handleEmojiClick} />
                 </div>
               )}
+
             </>
           ) : (
             <div className="no-chat">

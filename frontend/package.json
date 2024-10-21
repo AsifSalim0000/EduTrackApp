@@ -33,7 +33,8 @@
     "socket.io-client": "^4.8.0",
     "sweetalert2": "^11.13.1",
     "video.js": "^8.17.4",
-    "videojs-http-source-selector": "^1.1.6"
+    "videojs-http-source-selector": "^1.1.6",
+    "wavesurfer.js": "^7.8.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

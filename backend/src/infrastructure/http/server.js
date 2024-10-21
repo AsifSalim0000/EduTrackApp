@@ -58,14 +58,10 @@ io.on('connection', (socket) => {
   socket.on('stopTyping', ({ senderId, receiverId }) => {
     io.to(onlineUsers[receiverId]?.socketId).emit('stopTyping', { senderId, receiverId });
   });
-  socket.on('deleteMessage', async (messageId,chatId) => {
-    try {
-       
-        io.to(chatId).emit('messageDeleted', messageId); 
-    } catch (error) {
-        console.error(error);
-    }
-});
+  socket.on('deleteMessage', (messageId) => {
+    io.emit('messageDeleted', messageId); 
+  });
+  
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);

@@ -1,14 +1,14 @@
 
 import { findChat, createChat, createMessage, findMessages, findCoursesByUser, findInstructorsByUserIds, getStudentsByInstructorId, findMessageById, deleteMessageById } from '../repositories/MessageRepository.js';
 
-const sendMessageUseCase = async (userId, content, receiverId) => {
+const sendMessageUseCase = async (userId, content,type,replyTo,receiverId) => {
   let chat = await findChat(userId, receiverId);
 
   if (!chat) {
     chat = await createChat([userId, receiverId]);
   }
 
-  const newMessage = await createMessage(userId, content, chat._id);
+  const newMessage = await createMessage(userId, content,type,replyTo, chat._id);
 
   chat.latestMessage = newMessage._id;
   await chat.save();

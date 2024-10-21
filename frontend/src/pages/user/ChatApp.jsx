@@ -2,10 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Chat.css';
 import { useSelector } from 'react-redux'; 
-import { useFetchTeachersQuery, useSendMessageMutation, useGetLiveUpdatesQuery,useDeleteMessageMutation } from '../../store/userApiSlice';
+import { useFetchTeachersQuery, useSendMessageMutation, useGetLiveUpdatesQuery,useDeleteMessageMutation,useSendAudioMutation } from '../../store/userApiSlice';
 import io from 'socket.io-client';
 import Picker from 'emoji-picker-react';
 import { BsFillMicFill } from 'react-icons/bs';
+import { AiOutlineClose } from 'react-icons/ai';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 
@@ -15,6 +16,7 @@ function ChatApp() {
   const { userInfo } = useSelector((state) => state.auth);
   const { data: teachers, isFetching: fetchingTeachers, isError } = useFetchTeachersQuery(); 
   const [sendMessage] = useSendMessageMutation();
+  const [sendAudio] = useSendAudioMutation(); 
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -38,9 +40,7 @@ function ChatApp() {
   useEffect(() => {
     socket.on('receiveMessage', (newMessage) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
-      toast.success('Message recieved!', {
-        position: toast.POSITION.BOTTOM_RIGHT,
-      });
+      toast.success('Message recieved!');
     });
 
     socket.on('onlineUsers', (users) => {
@@ -103,6 +103,8 @@ function ChatApp() {
         content: newMessage,
         chatId: selectedTeacher._id, 
         receiverId: selectedTeacher.userId._id,
+        type: 'text',
+        replyTo: replyMessage ? replyMessage._id : null,
       };
 
       const { data } = await sendMessage(messageData); 
@@ -113,6 +115,11 @@ function ChatApp() {
       
     }
   };
+  const [replyMessage, setReplyMessage] = useState(null);
+
+const handleReplyMessage = (msg) => {
+  setReplyMessage(msg); 
+};
 
   const [typingTimeout, setTypingTimeout] = useState(null);
 
@@ -150,11 +157,12 @@ function ChatApp() {
         mediaRecorderRef.current = new MediaRecorder(stream);
         const chunks = [];
         mediaRecorderRef.current.ondataavailable = e => chunks.push(e.data);
+
         mediaRecorderRef.current.onstop = () => {
           const audioBlob = new Blob(chunks, { type: 'audio/wav' });
-          setAudioBlob(audioBlob); // Save recorded audio
+          setAudioBlob(audioBlob);
           setIsRecording(false);
-        };
+        };        
         mediaRecorderRef.current.start();
       })
       .catch(err => {
@@ -167,19 +175,43 @@ function ChatApp() {
     mediaRecorderRef.current.stop();
   };
 
-  const handleSendAudioMessage = () => {
-    if (audioBlob && selectedTeacher) {
-      const formData = new FormData();
-      formData.append('audio', audioBlob, 'audioMessage.wav');
-      formData.append('sender', userInfo._id);
-      formData.append('chatId', selectedTeacher._id);
-      formData.append('receiverId', selectedTeacher.userId._id);
-
-      sendMessage(formData);
-      socket.emit('sendMessage', { ...formData, contentType: 'audio' });
-      setAudioBlob(null); 
+const handleSendAudioMessage = async () => {
+  if (audioBlob && selectedTeacher) {
+    if (!(audioBlob instanceof Blob)) {
+      console.error('Audio blob is not valid:', audioBlob);
+      return;
     }
-  };
+    console.log("form data",audioBlob);
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'audioMessage.wav');
+    console.log("form data",formData);
+    
+
+    try {
+    
+      const result = await sendAudio(formData).unwrap();
+      
+
+      const messageData = {
+        sender: userInfo._id,
+        content: result.fileUrl, 
+        chatId: selectedTeacher._id,
+        receiverId: selectedTeacher.userId._id,
+        type: 'audio', 
+      };
+
+      const { data } = await sendMessage(messageData);
+      socket.emit('sendMessage', data); 
+      setMessages((prevMessages) => [...prevMessages, data]); 
+      setAudioBlob(null); 
+    } catch (error) {
+      console.error('Failed to send audio message:', error);
+    }
+  } else {
+    console.error('No audio to send or teacher not selected.');
+  }
+};
+
   const handleSelectMessage = (msg) => {
     Swal.fire({
       title: 'Do you want to delete this message?',
@@ -199,7 +231,7 @@ function ChatApp() {
     try {
       await deleteMessage(messageId).unwrap(); 
       setMessages((prevMessages) => prevMessages.filter(msg => msg._id !== messageId)); 
-      socket.emit('deleteMessage',  messageId, selectedTeacher._id);
+      socket.emit('deleteMessage',  messageId);
       Swal.fire(
         'Deleted!',
         'The message has been deleted for everyone.',
@@ -213,7 +245,11 @@ function ChatApp() {
       );
     }
   };
-   
+  const [openDropdown, setOpenDropdown] = useState(null);
+
+  const toggleDropdown = (index) => {
+    setOpenDropdown((prevState) => (prevState === index ? null : index));
+  };
 
   useEffect(() => {
     if (selectedTeacher) {
@@ -238,16 +274,13 @@ function ChatApp() {
     }
   }, [messages]);
 
+  
+
   useEffect(() => {
     socket.on('messageDeleted', (deletedMessageId) => {
       setMessages((prevMessages) => prevMessages.filter(msg => msg._id !== deletedMessageId));
     });
-
-    return () => {
-      socket.off('messageDeleted');
-    };
   }, []);
-
 
 
   useEffect(() => {
@@ -316,19 +349,63 @@ function ChatApp() {
                 )}
               </div>
               <div className="chat-body" ref={chatBodyRef} style={{ overflowY: 'auto', minHeight: '70vh', maxHeight: '70vh' }}>
-                {messages.map((msg, index) => (
-                  <div 
-                    key={index} 
-                    className={`message ${msg.sender._id === userInfo._id ? 'sent' : 'received'}`}
-                    onClick={() => handleSelectMessage(msg)} 
-                  >
-                    {msg.content}
-                    <span className="message-timestamp">{formatTime(msg.createdAt)}</span>
-                  </div>
-                ))}
+                {messages.map((msg, index) => {
+                  return(
+                        <div 
+                          key={index} 
+                          className={`row message ${msg.sender._id === userInfo._id ? 'sent' : 'received'}`}
+                        >
+                          <div className="message-content col-11">
+                          {msg.replyTo && (
+                                  <div className="replied-message bg-white rounded px-3 py-1">
+                                    <p className="replied-message-content text-black">{msg.replyTo.sender._id === userInfo._id ? 'You' : msg.replyTo.sender.username} : {msg.replyTo.content}</p>
+                                  </div>
+                            )}
+                            {msg.type === 'text' && (
+                              <p>{msg.content}</p>
+                            )}
+                            {msg.type === 'audio' && (
+                              <div className="audio-message">
+                                <audio controls className='w-100'>
+                                  <source src={msg.content} type="audio/wav" />
+                                  Your browser does not support the audio tag.
+                                </audio>
+                              </div>
+                            )}
+                          </div>
+                        
+                          <div className="message-options col-1">
+                            <button className="ellipsis-btn" onClick={() => toggleDropdown(index)}>
+                              &#x22EE;
+                            </button>
+                            {openDropdown === index && (
+                              <div className="dropdown-menu">
+                                <button onClick={() => handleReplyMessage(msg)}>Reply</button>
+                                <button onClick={() => handleSelectMessage(msg)}>Delete</button>
+                              </div>
+                            )}
+                          </div>
+
+                          <span className="message-timestamp">{formatTime(msg.createdAt)}</span>
+                        </div>
+                      )})}
+
               </div>
 
-              <div className="chat-footer p-3 d-flex">
+              <div className="chat-footer p-3 d-flex row">
+              
+                {replyMessage && (
+                     <div className="reply-box mb-2 p-2 border rounded bg-light col-12">
+                     <div className="d-flex justify-content-between align-items-center">
+                       <p className="mb-0">Replying to: {replyMessage.content}</p>
+                       <button className="btn btn-sm bg-danger text-white" onClick={() => setReplyMessage(null)}>
+                         <AiOutlineClose></AiOutlineClose>
+                       </button>
+                     </div>
+                   </div>
+            
+                 )}
+                <div className="d-flex col-12">
                 <input 
                   type="text"
                   className="form-control"
@@ -347,7 +424,7 @@ function ChatApp() {
                   Send Audio
                 </button>
                 <button className="btn btn-primary ms-2" onClick={handleSendMessage}>Send</button>
-
+                </div>
               </div>
               {showEmojiPicker && (
                 <div className="emoji-picker-container">
