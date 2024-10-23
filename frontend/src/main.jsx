@@ -46,6 +46,8 @@ import Wishlist from './pages/user/Wishlist';
 import ChatApp from './pages/user/ChatApp';
 import InstructorChatApp from './pages/instructor/InstructorChatApp';
 import AdminCourses from './pages/admin/AdminCourses';
+import CourseSearchResultsPage from './pages/CourseSearchResultsPage';
+import ReportPage from './pages/instructor/ReportPage';
 
 
 const router = createBrowserRouter(
@@ -68,6 +70,7 @@ const router = createBrowserRouter(
         <Route path="cart" element={<Cart />} />
         <Route path="checkout" element={<Checkout />} />
         <Route path="my-course/:courseId" element={<MyCourseContent />} />
+        <Route path="search" element={<CourseSearchResultsPage />} />
       </Route>
 
       </Route>
@@ -93,6 +96,7 @@ const router = createBrowserRouter(
             <Route path="courses/create-course" element={<CreateCourseForm />} />
             <Route path="courses/:courseId/add-content" element={<CourseContentPage />} />
             <Route path="messages" element={<InstructorChatApp />} />
+            <Route path="reports" element={<ReportPage />} />
           </Route>
         </Route>
       </Route>

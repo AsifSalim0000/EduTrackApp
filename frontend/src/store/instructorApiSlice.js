@@ -81,6 +81,22 @@ export const instructorApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Courses'],
     }),
+    downloadEarningsReport: builder.mutation({
+      query: ({ fromDate, toDate }) => ({
+        url: `${INSTRUCTOR_URL}/earnings-report`,
+        method: 'POST',
+        body: { fromDate, toDate },
+        responseHandler: (response) => response.blob(), // To handle the binary data (PDF)
+      }),
+    }),
+    downloadStudentPerformanceReport: builder.mutation({
+      query: ({ fromDate, toDate }) => ({
+        url: `${INSTRUCTOR_URL}/student-performance-report`,
+        method: 'POST',
+        body: { fromDate, toDate },
+        responseHandler: (response) => response.blob(), // To handle the binary data (PDF)
+      }),
+    }),
   }),
 });
 
@@ -95,5 +111,7 @@ export const {
   useFetchStudentsQuery,
   useGetDashboardInfoQuery,
   useDeleteCourseMutation,
-   useToggleLiveCourseMutation
+   useToggleLiveCourseMutation,
+   useDownloadEarningsReportMutation,
+   useDownloadStudentPerformanceReportMutation
 } = instructorApiSlice;

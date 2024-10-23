@@ -51,6 +51,7 @@ const handleMarkComplete = async () => {
       url={`${content.contentId.url}`}
       controls={true}
       className="mycourse-video-player"
+      onEnded={handleMarkComplete} 
       config={{
         file: {
           attributes: {

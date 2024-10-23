@@ -12,10 +12,9 @@ import { HttpStatus } from '../utils/HttpStatus.js';
 
 const getDashboardCounts = async (req, res) => {
   try {
-    console.log("a");
     
       const counts = await getDashboardCount();
-      console.log("a",counts);
+      
       return res.status(200).json(counts);
   } catch (error) {
       console.error("Error in fetching dashboard counts:", error);

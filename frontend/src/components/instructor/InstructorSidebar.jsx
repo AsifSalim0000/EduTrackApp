@@ -44,6 +44,13 @@ const InstructorSidebar = ({ activeItem }) => {
         </Nav.Link>
         <Nav.Link
           as={NavLink}
+          to="/instructor/reports"
+          className={activeItem === 'reports' ? 'active' : ''}
+        >
+        Reports
+        </Nav.Link>
+        <Nav.Link
+          as={NavLink}
           to="/instructor/logout"
           className={activeItem === 'logout' ? 'active' : ''}
         >

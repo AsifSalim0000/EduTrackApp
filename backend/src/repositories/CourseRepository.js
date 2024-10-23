@@ -94,6 +94,12 @@ const updateProgress = async (progressId, updatedProgress) => {
 const findCourseProgressByUserId = async (userId) => {
   return await CourseProgress.find({ userId }).populate('courseId');
 };
+const findCoursesByTitle = async (searchRegex) => {
+  return await Course.find({ title: { $regex: searchRegex } }).select('_id title'); // Return only title and _id
+};
 
+const findCoursesWithFilters = async (filterConditions) => {
+  return await Course.find(filterConditions); // Find courses based on the filter conditions
+};
 export {getAllCourses,findCourses,countCourses,findUserCourseById,countAllCourses, getAllCoursesForAdmin,blockCourse,unblockCourse,
-  getProgressByUserAndCourse,createProgress,updateProgress,findCourseProgressByUserId}
+  getProgressByUserAndCourse,createProgress,updateProgress,findCourseProgressByUserId,findCoursesByTitle,findCoursesWithFilters}

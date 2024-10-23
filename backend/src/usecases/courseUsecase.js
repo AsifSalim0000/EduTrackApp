@@ -1,6 +1,6 @@
 import { getCourses, createCourse, updateCourse, findCourseById, deleteCourse, toggleLiveCourse } from '../repositories/InstructorCourseRepository.js';
 import Course from '../domain/Course.js';
-import {countCourses, findCourses, getAllCourses,findUserCourseById, unblockCourse, blockCourse, getAllCoursesForAdmin} from '../repositories/CourseRepository.js';
+import {countCourses, findCourses, getAllCourses,findUserCourseById, unblockCourse, blockCourse, getAllCoursesForAdmin, findCoursesByTitle, findCoursesWithFilters} from '../repositories/CourseRepository.js';
 import {findMyCoursesByUserId, findUserEnrolledCourse} from '../repositories/MyCoursesRepository.js'
 import { loginUser } from '../controllers/UserController.js';
 
@@ -136,6 +136,29 @@ const handleToggleLiveCourse = async (courseId, isLive) => {
   if (!course) throw new Error('Course not found');
   return await toggleLiveCourse(courseId, isLive);
 };
-export default {fetchCourses,addCourse,fetchCourseDetails,updateCourseDetails,updateCourseContents,fetchAllCourses ,getMyCourses,getMyCourseByIdUseCase,
+const searchCoursesUseCase = async (query) => {
+  const searchRegex = new RegExp(query, 'i'); 
+  return await findCoursesByTitle(searchRegex); 
+};
+
+const searchFilterCoursesUseCase = async (query, filters) => {
+  const searchRegex = new RegExp(query, 'i'); 
+
+  const filterConditions = {
+    title: { $regex: searchRegex },
+    price: { $lte: filters.priceRange[1] }, 
+  };
+
+  if (filters.tags && filters.tags.length > 0) {
+    filterConditions.whatToTeach = { $in: filters.tags }; 
+  }
+
+  return await findCoursesWithFilters(filterConditions);
+};
+export default {
+  fetchCourses,addCourse,fetchCourseDetails,updateCourseDetails,updateCourseContents,
+  fetchAllCourses ,getMyCourses,getMyCourseByIdUseCase,
   fetchAllCoursesForAdmin,blockCourseById,unblockCourseById,
-   softDeleteCourse,handleToggleLiveCourse}
+   softDeleteCourse,handleToggleLiveCourse,
+   searchCoursesUseCase,searchFilterCoursesUseCase
+  }

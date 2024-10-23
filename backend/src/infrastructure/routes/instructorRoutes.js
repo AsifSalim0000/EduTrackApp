@@ -6,6 +6,7 @@ import { createCourseController, deleteCourseController, fetchCourse, getCourses
 import upload from '../../middlewares/upload.js';
 import videoUpload from '../../middlewares/videoUpload.js';
 import { getStudentsByInstructor } from '../../controllers/MessageController.js';
+import { getEarningsReport, getStudentPerformanceReport } from '../../controllers/instructor/ReportController.js';
 
 const router = express.Router();
 
@@ -19,5 +20,7 @@ router.get('/messages/students',protect,getStudentsByInstructor)
 router.get('/dashboard-info',protect,getInstructorDashboardInfo)
 router.patch('/courses/:id', deleteCourseController); 
 router.patch('/courses/:id/live', toggleLiveCourseController);
+router.post('/earnings-report', protect, getEarningsReport);
+router.post('/student-performance-report', protect, getStudentPerformanceReport);
 
 export default router;

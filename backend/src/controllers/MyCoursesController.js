@@ -1,3 +1,4 @@
+import Course from '../domain/Course.js';
 import courseUsecase from '../usecases/courseUsecase.js'
 import { HttpStatus } from '../utils/HttpStatus.js';
 
@@ -29,5 +30,25 @@ const getMyCourseById= async(req,res)=>{
         });
     }
 }
+const searchCourses = async (req, res) => {
+  const { query } = req.body; // Get the search query from the request body
 
-export {getCoursesByUser,getMyCourseById}
+  try {
+    const courses = await courseUsecase.searchCoursesUseCase(query); // Call the use case
+    res.json(courses); // Send back the search results
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const searchFilterCourses = async (req, res) => {
+  const { query, filters } = req.body;
+
+  try {
+    const courses = await courseUsecase.searchFilterCoursesUseCase(query, filters); // Call the use case
+    res.json(courses); // Send courses back to the frontend
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+export {getCoursesByUser,getMyCourseById,searchCourses,searchFilterCourses}

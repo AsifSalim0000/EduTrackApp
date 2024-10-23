@@ -64,7 +64,7 @@ const CoursesList = () => {
             <CourseCard
               title={course.title}
               description={course.description}
-              progress={progressMap[course._id] || 0} // Use progress from map or 0 if not found
+              progress={progressMap[course._id] || 0} 
               thumbnail={course.thumbnail}
               onClick={() => {
                 navigate(`/my-course/${course._id}`); 
@@ -85,7 +85,7 @@ const CoursesList = () => {
         </button>
         <span>Page {page} of {totalPages}</span>
         <button
-          className="btn btn-primary"
+          className="btn btn-primary "
           disabled={page === totalPages}
           onClick={() => handlePageChange(page + 1)}
         >

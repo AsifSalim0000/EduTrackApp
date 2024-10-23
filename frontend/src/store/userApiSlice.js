@@ -228,6 +228,20 @@ export const userApiSlice = apiSlice.injectEndpoints({
         },
       }),
     }),
+    searchCourses: builder.mutation({
+      query: ({ query, filters }) => ({
+          url: `${USERS_URL}/courses/search`,
+          method: 'POST',
+          body: { query, filters },
+      }),
+  }),
+    searchFilterCourses: builder.mutation({
+      query: ({ query, filters }) => ({
+          url: `${USERS_URL}/courses/search-filter`,
+          method: 'POST',
+          body: { query, filters },
+      }),
+  }),
 
   }),
 });
@@ -269,6 +283,8 @@ export const {
   useUpdateCourseProgressMutation,
   useMarkContentAsCompleteMutation,
   useGetUserCourseProgressQuery,
-  useSendAudioMutation
+  useSendAudioMutation,
+  useSearchCoursesMutation,
+  useSearchFilterCoursesMutation
 } = userApiSlice;
 

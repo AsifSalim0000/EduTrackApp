@@ -5,7 +5,7 @@ import { protect } from '../../middlewares/authMiddleware.js';
 import { handleCreateInstructor } from '../../controllers/instructor/InstructorController.js';
 import { addCourseToCart, addCourseToWishlist, fetchCart, removeCourseFromWishlist, removeFromCart } from '../../controllers/CartController.js';
 import { createOrder, createRazorpayOrder,getOrderHistory } from '../../controllers/OrderController.js';
-import { getCoursesByUser,getMyCourseById } from '../../controllers/MyCoursesController.js';
+import { getCoursesByUser,getMyCourseById, searchCourses, searchFilterCourses } from '../../controllers/MyCoursesController.js';
 import upload from '../../middlewares/upload.js';
 import { deleteMessageController, fetchMyTeachers, getMessages, sendAudio, sendMessage } from '../../controllers/MessageController.js';
 import { addReview, getUserReviewForCourse } from '../../controllers/ReviewController.js';
@@ -35,6 +35,7 @@ router.post('/remove-from-cart',protect, removeFromCart);
 router.post('/create-razorpay-order',protect,createRazorpayOrder)
 router.post('/create-order',protect,createOrder)
 router.get('/my-courses',protect,getCoursesByUser)
+router.get('/course-progress',protect, handleGetUserCourseProgress);
 router.put('/update-user', protect,upload.single('profileImage'), updateUser);
 router.put('/update-password', protect, updatePassword);
 router.get('/mycourse/:courseId',protect,getMyCourseById)
@@ -48,7 +49,10 @@ router.get('/reviews/user/:courseId', protect,getUserReviewForCourse);
 router.post('/refresh-token',refreshAccessToken);
 router.delete('/messages/:messageId',protect, deleteMessageController);
 router.post('/mark-as-complete',protect, markAsComplete);
-router.get('/course-progress',protect, handleGetUserCourseProgress);
+
 router.post('/upload-audio', audioUpload.single('audio'),sendAudio);
+router.post('/courses/search', protect,searchCourses);
+router.post('/courses/search-filter', protect,searchFilterCourses);
+
 
 export default router;

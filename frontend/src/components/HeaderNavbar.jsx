@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { useLogoutUserMutation } from '../store/userApiSlice';
+import { useLogoutUserMutation,useSearchCoursesMutation } from '../store/userApiSlice';
 import { logout } from '../store/authSlice';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -12,11 +12,29 @@ const HeaderNavbar = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const [search, setSearch] = useState('');
+    const [suggestions, setSuggestions] = useState([]);
+    const [searchCourses] = useSearchCoursesMutation();
+
     const handleLogout = async (e) => {
         e.preventDefault();
         await logoutApiCall().unwrap();
         dispatch(logout());
         navigate('/');
+    };
+    const handleSearchChange = async (e) => {
+        setSearch(e.target.value);
+        if (e.target.value) {
+            const response = await searchCourses({ query: e.target.value }).unwrap();
+            setSuggestions(response); // Assuming it returns course suggestions
+        } else {
+            setSuggestions([]);
+        }
+    };
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        navigate(`/search?query=${search}`);
     };
 
     return (
@@ -52,16 +70,33 @@ const HeaderNavbar = () => {
                             <Link className="nav-link" to="/pricing">Price & Planning</Link>
                         </li>
                     </ul>
-                    <form className="d-flex ms-auto">
+                    <form className="d-flex ms-auto" onSubmit={handleSearchSubmit}>
                         <input 
                             className="form-control me-2" 
                             type="search" 
-                            placeholder="Search" 
+                            placeholder="Search courses" 
                             aria-label="Search" 
+                            value={search} 
+                            onChange={handleSearchChange}
                         />
                         <button className="btn btn-outline-success" type="submit">
                             <i className="bi bi-search"></i>
                         </button>
+
+                        {/* Suggestions dropdown */}
+                        {suggestions.length > 0 && (
+                            <ul className="list-group position-absolute mt-5 search-suggestions">
+                                {suggestions.map((course) => (
+                                    <li 
+                                        key={course._id} 
+                                        className="list-group-item"
+                                        onClick={() => navigate(`/coursedetails/${course._id}`)}
+                                    >
+                                        {course.title}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </form>
                     <ul className="navbar-nav ms-3">
                         {userInfo ? (
