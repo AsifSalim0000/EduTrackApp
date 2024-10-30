@@ -22,6 +22,7 @@ const sendOtp = asyncHandler(async (req, res) => {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   req.session.otp = otp;
   req.session.userData = { email, username, password };
+  console.log(otp,"otp")
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: email,

@@ -10,7 +10,7 @@ const getAllCourses = async (userId, page, search) => {
     const myCourses = await MyCourses.findOne({ userId }).select('courses.courseId');
     const purchasedCourseIds = myCourses ? myCourses.courses.map(course => course.courseId.toString()) : [];
 
-    const query = search ? { title: new RegExp(search, 'i') } : {};
+    const query = search ? { title: new RegExp(search, 'i'),isLive:true,isDeleted:false,isBlocked:false } : {isLive:true,isDeleted:false,isBlocked:false};
     const courses = await Course.find(query).skip(skip).limit(limit).populate('instructor');
 
     const totalCourses = await Course.countDocuments(query);

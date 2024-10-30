@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 
 const generateTokens = (res, userId) => {
-
   const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: '15m',  
   });
@@ -13,15 +12,15 @@ const generateTokens = (res, userId) => {
   res.cookie('jwt', accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV !== 'development',
-    sameSite: 'None',
-    maxAge: 30 * 24 * 60 * 60 * 1000,
+    sameSite: 'lax', 
+    maxAge: 15 * 60 * 1000, 
   });
 
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV !== 'development',
-    sameSite: 'None',
-    maxAge: 30 * 24 * 60 * 60 * 1000,
+    sameSite: 'lax', 
+    maxAge: 30 * 24 * 60 * 60 * 1000, 
   });
 };
 

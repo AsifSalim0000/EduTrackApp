@@ -58,7 +58,11 @@ const courseSchema = new mongoose.Schema({
     isDeleted:{
         type: Boolean,
         default: false,
-    }
+    },
+    rating: {
+        type: Number,
+        
+    },
 });
 
 export default mongoose.model('Course', courseSchema);

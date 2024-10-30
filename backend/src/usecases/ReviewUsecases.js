@@ -1,4 +1,4 @@
-import { createReview ,findReviewByUserForCourse,findReviewsByCourse} from "../repositories/ReviewRepository.js"; 
+import { createReview ,findReviewByUserForCourse,findReviewsByCourse, updateCourseRatingInDB} from "../repositories/ReviewRepository.js"; 
 
 const addNewReview = async (reviewData) => {
     return await createReview(reviewData);
@@ -17,5 +17,12 @@ const getUserReviewsForCourse = async (courseId, userId) => {
 
     return userReview;
 };
+const getReviewsByCourseId = async (courseId) => {
+    return await findReviewsByCourse(courseId);
+};
 
-export {addNewReview,getReviewForCourse,getUserReviewsForCourse}
+const updateCourseRating = async (courseId, newRating) => {
+    return await updateCourseRatingInDB(courseId, newRating);
+};
+
+export {addNewReview,getReviewForCourse,getUserReviewsForCourse,getReviewsByCourseId,updateCourseRating}

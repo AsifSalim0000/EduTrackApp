@@ -3,7 +3,6 @@ import asyncHandler from 'express-async-handler';
 import User from '../domain/User.js';
 
 export const refreshAccessToken = asyncHandler(async (req, res) => {
-  
   const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) {
@@ -25,7 +24,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     res.cookie('jwt', newAccessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV !== 'development',
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 15 * 60 * 1000,
     });
 

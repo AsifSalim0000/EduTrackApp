@@ -36,13 +36,16 @@ const updateUserRole = async (user) => {
   }
 };
 
-const createInstructor = asyncHandler(async (instructorData, token) => {
+const createInstructor = asyncHandler(async (instructorData, userId) => {
   try {
-    const userId = await useIdFromToken(token);
-
+    
     const user = await findUserById(userId);
     if (user.role === "Instructor") {
+      console.log("userId");
+      
       const existingInstructor = await Instructor.findOne({ userId });
+      console.log(existingInstructor,"Instr");
+      
       if (existingInstructor) {
         throw new Error('Instructor profile already exists');
       }

@@ -79,7 +79,7 @@ const OrderHistory = () => {
                     <Col md={9}>
                       <h5>{item.title}</h5>
                       <p>Course by: {item.courseId.instructor.username}</p>
-                      <p className="text-warning">Rating: 4.7 ★ (451,444 Reviews)</p>
+                      <p className="text-warning">Rating: {item.courseId.rating?item.courseId.rating:"No Reviews yet" } ★ (451,444 Reviews)</p>
                       <p className="text-danger">${item.price.toFixed(2)}</p>
                       <Button variant="orangish" onClick={() => handleWriteReviewClick(item.courseId)}>
                         Write a Review

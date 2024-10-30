@@ -47,7 +47,7 @@ const CourseCard = ({ image, title, price, rating, isPurchased, onAddToCart, onA
     <Card.Body onClick={onClick}>
       <Card.Title className="course-title">{title}</Card.Title>
       <Card.Text className="course-price">Price: {price}</Card.Text>
-      <Card.Text className="course-rating">Rating: {rating} ★</Card.Text>
+      <Card.Text className="course-rating">Rating: {rating?rating: "No Reviews yet"} ★</Card.Text>
     </Card.Body>
   </Card>
 );

@@ -4,9 +4,9 @@ import { getDashboardInfo } from '../../usecases/DashboardInfo.js';
 
 const handleCreateInstructor = asyncHandler(async (req, res) => {
   const instructorData = req.body;
-  const token = req.cookies.jwt;
-  console.log('Token received:', token);
-  const newInstructor = await createInstructor(instructorData, token);
+  const userId = req.user._id;
+  console.log('userId received:', userId);
+  const newInstructor = await createInstructor(instructorData, userId);
   res.status(201).json(newInstructor);
 });
 

@@ -1,12 +1,24 @@
-import {addNewReview,getReviewForCourse, getUserReviewsForCourse} from '../usecases/ReviewUsecases.js';
+import {addNewReview,getReviewForCourse, getReviewsByCourseId, getUserReviewsForCourse, updateCourseRating} from '../usecases/ReviewUsecases.js';
 
-// Add a new review
+const calculateAverageRating = (reviews) => {
+    if (reviews.length === 0) return 0;
+
+    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    return totalRating / reviews.length;
+};
+
 const addReview = async (req, res) => {
     const { courseId, rating, comment } = req.body;
     const userId=req.user._id
 
     try {
         const newReview = await addNewReview({ userId, courseId, rating, comment });
+
+        const reviews = await getReviewsByCourseId(courseId);
+        const newAverageRating = calculateAverageRating(reviews);
+
+        await updateCourseRating(courseId, newAverageRating);
+
         return res.status(201).json(newReview);
     } catch (error) {
         return res.status(500).json({ message: 'Error creating review', error });

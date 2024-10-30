@@ -63,7 +63,7 @@ const NewCourses = () => {
               isPurchased={course.isPurchased}
               onAddToCart={() => handleAddToCart(course._id)} 
               onAddToWishlist={() => handleAddToWishlist(course._id)}
-              onWatchLecture={() => handleWatchLecture(course._id)} // Pass the watch lecture handler
+              onWatchLecture={() => handleWatchLecture(course._id)} 
               onClick={() => handleCourseClick(course._id)} 
             />
           </Col>

@@ -13,9 +13,10 @@ const loginUser = asyncHandler(async (req, res) => {
   const user = await UserManagement.loginUser(email, password);
   
   if (user) {
-    const token = generateTokens(res, user._id); // Store token if you're generating it here
+    const token = generateTokens(res, user._id); 
+    
     res.status(HttpStatus.OK).json({
-      token, // Include token in the response
+      token, 
       _id: user._id,
       name: user.name,
       email: user.email,
@@ -43,7 +44,7 @@ const googleAuthHandler = asyncHandler(async (req, res) => {
     });
   }
 
-  const jwtToken = generateTokens(res, user._id); // Store token if you're generating it here
+  const jwtToken = generateTokens(res, user._id); 
 
   res.status(HttpStatus.OK).json({
     token: jwtToken, // Include token in the response
@@ -63,6 +64,11 @@ const logoutUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     expires: new Date(0),
   });
+  res.cookie('refreshToken', '', {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  
   res.status(HttpStatus.OK).json({ message: 'Logged out successfully' });
 });
 
