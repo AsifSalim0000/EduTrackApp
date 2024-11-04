@@ -8,11 +8,14 @@ import { toast } from 'react-toastify';
 
 const MyCourseContent = () => {
   const { courseId } = useParams();
-  const { data: courseData, isLoading, isError } = useGetMyCourseByIdQuery(courseId);
+  const { data: courseData, isLoading, isError,refetch } = useGetMyCourseByIdQuery(courseId);
   const [selectedContentIndex, setSelectedContentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
   const [markAsComplete] = useMarkContentAsCompleteMutation();
 
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 const handleMarkComplete = async () => {
   try {
     await markAsComplete({ courseId, contentId: selectedContent.contentId._id });

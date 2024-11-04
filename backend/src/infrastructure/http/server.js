@@ -24,9 +24,8 @@ const __dirname = path.dirname(__filename);
 
 // Initialize the Express app
 const app = express();
-connectDB(); // Connect to the database
+connectDB(); 
 
-// Create the server
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {

@@ -26,7 +26,7 @@ const HeaderNavbar = () => {
         setSearch(e.target.value);
         if (e.target.value) {
             const response = await searchCourses({ query: e.target.value }).unwrap();
-            setSuggestions(response); // Assuming it returns course suggestions
+            setSuggestions(response); 
         } else {
             setSuggestions([]);
         }
@@ -55,7 +55,7 @@ const HeaderNavbar = () => {
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <Link className="nav-link" to="/courses">Courses</Link>
+                            <Link className="nav-link" to="/profile/courses">Courses</Link>
                         </li>
                         {userInfo?.role === 'Instructor' ? (
                             <li className="nav-item">

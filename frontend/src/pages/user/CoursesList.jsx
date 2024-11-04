@@ -10,7 +10,11 @@ const CoursesList = () => {
 
   const navigate = useNavigate(); 
 
-  const { data: coursesData, isLoading: coursesLoading, isError: coursesError, error: coursesErrorMsg } = useGetMyCoursesQuery({
+  const { data: coursesData,
+          isLoading: coursesLoading,
+          isError: coursesError,
+           error: coursesErrorMsg,
+           refetch: refetchCourses } = useGetMyCoursesQuery({
     page,
     limit,
     search: searchQuery,
@@ -18,6 +22,10 @@ const CoursesList = () => {
 
   const { data: progressData, isLoading: progressLoading } = useGetUserCourseProgressQuery();
 
+  useEffect(() => {
+    refetchCourses();
+  }, [page, searchQuery, refetchCourses]);
+  
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };

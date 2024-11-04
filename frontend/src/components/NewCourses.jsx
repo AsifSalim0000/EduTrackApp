@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Container, Row, Pagination } from 'react-bootstrap';
 import CourseCard from './CourseCard';
 import { useNavigate } from 'react-router-dom';
@@ -9,10 +9,14 @@ const NewCourses = () => {
   
   const [page, setPage] = useState(1); 
   
-  const { data: coursesData, error, isLoading } = useGetCoursesQuery({ page });
+  const { data: coursesData, error, isLoading,refetch } = useGetCoursesQuery({ page });
 
   const [addToCart] = useAddToCartMutation();
   const [addToWishlist] = useAddToWishlistMutation();
+
+  useEffect(() => {
+    refetch();
+  }, [page, refetch]);
 
   const handleCourseClick = (courseId) => {
     navigate(`/coursedetails/${courseId}`);
