@@ -242,6 +242,12 @@ export const userApiSlice = apiSlice.injectEndpoints({
           body: { query, filters },
       }),
   }),
+  getVideoUrl: builder.mutation({
+    query: (key) => ({
+      url: `${USERS_URL}/video/${key}`,
+      method: 'GET',
+    }),
+  }),
 
   }),
 });
@@ -285,6 +291,7 @@ export const {
   useGetUserCourseProgressQuery,
   useSendAudioMutation,
   useSearchCoursesMutation,
-  useSearchFilterCoursesMutation
+  useSearchFilterCoursesMutation,
+  useGetVideoUrlMutation
 } = userApiSlice;
 

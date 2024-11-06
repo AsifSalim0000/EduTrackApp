@@ -12,6 +12,7 @@ import { addReview, getUserReviewForCourse } from '../../controllers/ReviewContr
 import { refreshAccessToken } from '../../middlewares/AuthController.js';
 import { handleGetUserCourseProgress, markAsComplete } from '../../controllers/CourseProgressController.js';
 import audioUpload from '../../middlewares/audioUpload.js';
+import { getSignedUrlHandler } from '../../controllers/VideoController.js';
 
 const router = express.Router();
 
@@ -49,10 +50,9 @@ router.get('/reviews/user/:courseId', protect,getUserReviewForCourse);
 router.post('/refresh-token',refreshAccessToken);
 router.delete('/messages/:messageId',protect, deleteMessageController);
 router.post('/mark-as-complete',protect, markAsComplete);
-
 router.post('/upload-audio', audioUpload.single('audio'),sendAudio);
 router.post('/courses/search', protect,searchCourses);
 router.post('/courses/search-filter', protect,searchFilterCourses);
-
+router.get('/video/videos/:key', getSignedUrlHandler);
 
 export default router;

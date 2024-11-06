@@ -125,10 +125,10 @@ const uploadVideo = async (req, res) => {
     return res.status(400).send('No file uploaded.');
   }
 
-  // The file URL from S3
-  const videoUrl = req.file.location;
 
-  res.json({ videoUrl });  // Return the uploaded video's URL
+  const videoUrl = req.file.key;
+
+  res.json({ videoUrl });
 };
 const deleteCourseController = async (req, res) => {
   try {

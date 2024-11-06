@@ -15,11 +15,10 @@ const s3 = new S3Client({
   },
 });
 
-// Set up multer to upload to S3
 const upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: process.env.AWS_S3_BUCKET_NAME,
+    bucket: process.env.AWS_S3_BUCKET_PUBLIC_NAME,
     key: (req, file, cb) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
       const fileExtension = path.extname(file.originalname);

@@ -289,6 +289,15 @@ const handleSendAudioMessage = async () => {
     }
   }, [liveUpdates, fetchingMessages]);
 
+  useEffect(() => {
+    const updateOnlineUsers = setTimeout(() => {
+      socket.on("onlineUsers", (users) => setOnlineUsers(users));
+    }, 300);
+    console.log(updateOnlineUsers);
+    
+    return () => clearTimeout(updateOnlineUsers);
+  }, [socket]);
+
   const formatTime = (timeString) => {
     const options = { hour: '2-digit', minute: '2-digit' };
     return new Date(timeString).toLocaleTimeString([], options);

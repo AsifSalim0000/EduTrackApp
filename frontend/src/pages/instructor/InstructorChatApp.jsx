@@ -44,6 +44,7 @@ function InstructorChatApp() {
         content: newMessage,
         chatId: selectedStudent._id,
         receiverId: selectedStudent._id,
+        replyTo: replyMessage ? replyMessage._id : null,
       };
 
       const { data } = await sendMessage(messageData);
@@ -126,6 +127,7 @@ const handleSendAudioMessage = async () => {
         chatId: selectedStudent._id,
         receiverId: selectedStudent.userId._id,
         type: 'audio', 
+
       };
 
       const { data } = await sendMessage(messageData);

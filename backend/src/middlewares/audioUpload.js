@@ -22,7 +22,7 @@ const s3 = new S3Client({
 const audioUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: process.env.AWS_S3_BUCKET_NAME,
+    bucket: process.env.AWS_S3_BUCKET_PUBLIC_NAME,
     key: (req, file, cb) => {
       const uniqueSuffix = Date.now() + '-' + path.extname(file.originalname);
       cb(null, `audio/${uniqueSuffix}`); 

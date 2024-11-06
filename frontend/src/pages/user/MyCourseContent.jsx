@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, ListGroup, Alert } from 'react-bootstrap';
 import ReactPlayer from 'react-player';
-import { useGetMyCourseByIdQuery, useMarkContentAsCompleteMutation } from '../../store/userApiSlice';
+import { useGetMyCourseByIdQuery, useMarkContentAsCompleteMutation,useGetVideoUrlMutation } from '../../store/userApiSlice';
 import './MyCourseContent.css';
 import { toast } from 'react-toastify';
 
@@ -12,6 +12,8 @@ const MyCourseContent = () => {
   const [selectedContentIndex, setSelectedContentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
   const [markAsComplete] = useMarkContentAsCompleteMutation();
+  const [getVideoUrl] = useGetVideoUrlMutation();
+  const [videoUrl, setVideoUrl] = useState('');
 
   useEffect(() => {
     refetch();
@@ -32,6 +34,20 @@ const handleMarkComplete = async () => {
     }
   }, [courseData]);
 
+  useEffect(() => {
+    const fetchVideoUrl = async () => {
+      if (courseData && courseData.contents[selectedContentIndex]) {
+        const contentKey = courseData.contents[selectedContentIndex].contentId.url;
+        
+        const { videoUrl } = await getVideoUrl(contentKey).unwrap();
+        
+        
+        setVideoUrl(videoUrl);
+      }
+    };
+    fetchVideoUrl();
+  }, [selectedContentIndex, courseData]);
+
   if (isLoading) {
     return <div className="mycourse-loading">Loading...</div>;
   }
@@ -51,7 +67,7 @@ const handleMarkComplete = async () => {
 
   const renderVideoContent = (content) => (
     <ReactPlayer
-      url={`${content.contentId.url}`}
+      url={videoUrl}
       controls={true}
       className="mycourse-video-player"
       onEnded={handleMarkComplete} 
